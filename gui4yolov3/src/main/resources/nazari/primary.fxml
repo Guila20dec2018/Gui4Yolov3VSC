@@ -12,7 +12,7 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 
-<TitledPane fx:id="primaryTitledPane" animated="false" collapsible="false" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" pickOnBounds="false" prefHeight="400.0" prefWidth="600.0" text="IMPOSTAZIONI INIZIALI" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="nazari.PrimaryController">
+<TitledPane fx:id="primaryTitledPane" animated="false" collapsible="false" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" pickOnBounds="false" prefHeight="400.0" prefWidth="600.0" text="IMPOSTAZIONI INIZIALI" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="nazari.PrimaryController">
    <content>
       <VBox prefHeight="200.0" prefWidth="100.0">
          <children>
@@ -74,7 +74,7 @@
                               <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                            </GridPane.margin></Button>
                         <Button mnemonicParsing="false" onAction="#downloadDarknet" text="Scarica" GridPane.columnIndex="3" GridPane.halignment="CENTER" GridPane.rowIndex="2" />
-                        <TextField fx:id="directoryToDownloadDarknet" prefHeight="26.0" prefWidth="260.0" promptText="Cammino scelto" GridPane.columnIndex="2" GridPane.rowIndex="1">
+                        <TextField fx:id="directoryToDownloadDarknetTextField" prefHeight="26.0" prefWidth="260.0" promptText="Cammino scelto" GridPane.columnIndex="2" GridPane.rowIndex="1">
                            <GridPane.margin>
                               <Insets left="5.0" right="20.0" />
                            </GridPane.margin>
@@ -88,7 +88,7 @@
             </TitledPane>
             <ButtonBar prefHeight="40.0" prefWidth="179.0">
               <buttons>
-                  <Button mnemonicParsing="false" onAction="#close" text="Annulla" />
+                  <Button cancelButton="true" mnemonicParsing="false" onAction="#close" text="Annulla" />
                 <Button mnemonicParsing="false" onAction="#checkAndNextScreen" text="Ok" />
               </buttons>
                <VBox.margin>

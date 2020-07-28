@@ -24,6 +24,11 @@ public class App extends Application {
     }
 
     static void setRoot(String fxml) throws IOException {
+        if (fxml.equalsIgnoreCase("secondary")) {
+            Stage stage = (Stage) scene.getWindow();
+            stage.setWidth(960);
+            stage.setHeight(640);
+        }
         scene.setRoot(loadFXML(fxml));
     }
 

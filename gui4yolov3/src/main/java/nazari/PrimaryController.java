@@ -25,7 +25,7 @@ public class PrimaryController {
 
     @FXML TextField chosenPathToDarknetTextField;
 
-    @FXML TextField directoryToDownloadDarknet;
+    @FXML TextField directoryToDownloadDarknetTextField;
 
     private boolean res = false;
     private File dir = null;
@@ -72,6 +72,7 @@ public class PrimaryController {
                 p.waitFor();
                 System.out.println ("exit: " + p.exitValue());
                 p.destroy();
+                res = true;
             } catch (Exception e) {
                 System.out.println(e.getStackTrace());
                 e.printStackTrace();
@@ -82,7 +83,7 @@ public class PrimaryController {
             Optional<ButtonType> result = alert.showAndWait();
             if (result.isPresent() && result.get() == ButtonType.OK) {
                 //formatSystem();
-                directoryToDownloadDarknet.requestFocus();
+                directoryToDownloadDarknetTextField.requestFocus();
             } 
         }
     }
@@ -95,7 +96,7 @@ public class PrimaryController {
         final File selectedDirectory = directoryChooser.showDialog(stage);
         if (selectedDirectory != null) {
             String directory = selectedDirectory.getAbsolutePath();
-            directoryToDownloadDarknet.setText(directory);
+            directoryToDownloadDarknetTextField.setText(directory);
             dir = selectedDirectory;
         }
     }
