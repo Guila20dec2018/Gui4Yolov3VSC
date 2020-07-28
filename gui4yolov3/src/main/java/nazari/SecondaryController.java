@@ -65,6 +65,8 @@ public class SecondaryController {
     @FXML // fx:id="pathToWeightsFileTextField"
     private TextField pathToWeightsFileTextField; // Value injected by FXMLLoader
 
+    private File weigthsFile;
+
 
     private boolean lookingForFile(String fileName, String subDirectory) {
         boolean find = false;
@@ -84,6 +86,10 @@ public class SecondaryController {
                         cfgFile = new File(dir.getAbsolutePath().concat("/" + fileName));
                         System.out.println("Pointer to cfg file: " + cfgFile.getAbsolutePath());
                     }
+                    else if (subDirectory.equalsIgnoreCase("")) {
+                        weigthsFile = new File(dir.getAbsolutePath().concat("/" + fileName));
+                        System.out.println("Pointer to weights file: " + weigthsFile.getAbsolutePath());
+                    }
                 }
                 System.out.println("line: " + s);
             }
@@ -101,9 +107,6 @@ public class SecondaryController {
     @FXML
     void changeStateYolov3CfgCheckBox(ActionEvent event) {
         if (yolov3CfgCheckBox.isSelected()) {
-            yolov3tinyCfgCheckBox.setSelected(false);
-            pathToCfgFileTextField.setText("");
-
             //look for the file in .../darknet/cfg
             if (!lookingForFile("yolov3.cfg", "cfg")) {
                 Alert alert = new Alert(AlertType.WARNING, "Assicurati di avere il file yolov3.cfg sotto .../darknet/cfg!");
@@ -113,15 +116,16 @@ public class SecondaryController {
                     yolov3CfgCheckBox.setSelected(false);
                 }
             }
+            else {
+                yolov3tinyCfgCheckBox.setSelected(false);
+                pathToCfgFileTextField.setText("");
+            }
         }
     }
 
     @FXML
     void changeStateYolov3tinyCfgCheckBox(ActionEvent event) {
         if (yolov3tinyCfgCheckBox.isSelected()) {
-            yolov3CfgCheckBox.setSelected(false);
-            pathToCfgFileTextField.setText("");
-
             //look for the file in .../darknet/cfg
             if (!lookingForFile("yolov3-tiny.cfg", "cfg")) {
                 Alert alert = new Alert(AlertType.WARNING, "Assicurati di avere il file yolov3-tiny.cfg sotto .../darknet/cfg!");
@@ -131,11 +135,15 @@ public class SecondaryController {
                     yolov3tinyCfgCheckBox.setSelected(false);
                 }
             }
+            else {
+                yolov3CfgCheckBox.setSelected(false);
+                pathToCfgFileTextField.setText("");
+            }
         }
     }
 
-    private static void configureFileChooser(final FileChooser fileChooser){
-        fileChooser.setTitle("Scegli il file di configurazione");
+    private static void configureFileChooser(final FileChooser fileChooser, String fileType){
+        fileChooser.setTitle("Scegli il file di " + fileType);
         fileChooser.setInitialDirectory(
             new File(System.getProperty("user.home"))
         );
@@ -146,7 +154,7 @@ public class SecondaryController {
         Stage stage = (Stage) containerTabPane.getScene().getWindow();
 
         final FileChooser fileChooser = new FileChooser();
-        configureFileChooser(fileChooser);
+        configureFileChooser(fileChooser, "configurazione");
         File selectedFile = fileChooser.showOpenDialog(stage);
 
         if (selectedFile != null) {
@@ -164,17 +172,59 @@ public class SecondaryController {
 
     @FXML
     void changeStateYolov3WeigthsCheckBox(ActionEvent event) {
-        
+        if (yolov3WeigthsCheckBox.isSelected()) {
+            //look for the file in .../darknet/cfg
+            if (!lookingForFile("yolov3.weights", "")) {
+                Alert alert = new Alert(AlertType.WARNING, "Assicurati di avere il file yolov3.weights sotto .../darknet!");
+                Optional<ButtonType> result = alert.showAndWait();
+                if (result.isPresent() && result.get() == ButtonType.OK) {
+                    //formatSystem();
+                    yolov3WeigthsCheckBox.setSelected(false);
+                }
+            }
+            else {
+                darknetConv74CheckBox.setSelected(false);
+                pathToWeightsFileTextField.setText("");
+            }
+        }
     }
 
     @FXML
     void changeStateDarknetConv74CheckBox(ActionEvent event) {
-
+        if (darknetConv74CheckBox.isSelected()) {
+            //look for the file in .../darknet/cfg
+            if (!lookingForFile("darknet53.conv.74", "")) {
+                Alert alert = new Alert(AlertType.WARNING, "Assicurati di avere il file darknet53.conv.74 sotto .../darknet!");
+                Optional<ButtonType> result = alert.showAndWait();
+                if (result.isPresent() && result.get() == ButtonType.OK) {
+                    //formatSystem();
+                    darknetConv74CheckBox.setSelected(false);
+                }
+            }
+            else {
+                yolov3WeigthsCheckBox.setSelected(false);
+                pathToWeightsFileTextField.setText("");
+            }
+        }
     }
 
     @FXML
     void handleChooseWeightsFileButtonClick(ActionEvent event) {
+        Stage stage = (Stage) containerTabPane.getScene().getWindow();
 
+        final FileChooser fileChooser = new FileChooser();
+        configureFileChooser(fileChooser, "pesi");
+        File selectedFile = fileChooser.showOpenDialog(stage);
+
+        if (selectedFile != null) {
+            String selectedFilePath = selectedFile.getAbsolutePath();
+            pathToWeightsFileTextField.setText(selectedFilePath);
+            weigthsFile = selectedFile;
+            System.out.println("Pointer to weights file: " + weigthsFile.getAbsolutePath());
+            //System.out.println(selectedFilePath);
+            yolov3WeigthsCheckBox.setSelected(false);
+            darknetConv74CheckBox.setSelected(false);
+        }
     }
     
     @FXML // This method is called by the FXMLLoader when initialization is complete
