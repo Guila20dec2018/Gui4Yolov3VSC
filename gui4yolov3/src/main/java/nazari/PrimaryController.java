@@ -4,7 +4,6 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.nio.file.Path;
 import java.util.Optional;
 
 import javafx.event.ActionEvent;
@@ -15,7 +14,6 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.TitledPane;
 import javafx.scene.control.Alert.AlertType;
 import javafx.stage.DirectoryChooser;
-import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
 
@@ -119,6 +117,14 @@ public class PrimaryController {
     private void close() {
         Stage stage = (Stage) primaryTitledPane.getScene().getWindow();
         stage.close();
+    }
+
+    @FXML // This method is called by the FXMLLoader when initialization is complete
+    void initialize() {
+        assert primaryTitledPane != null : "fx:id=\"primaryTitledPane\" was not injected: check your FXML file 'primary.fxml'.";
+        assert chosenPathToDarknetTextField != null : "fx:id=\"chosenPathToDarknetTextField\" was not injected: check your FXML file 'primary.fxml'.";
+        assert directoryToDownloadDarknetTextField != null : "fx:id=\"directoryToDownloadDarknetTextField\" was not injected: check your FXML file 'primary.fxml'.";
+
     }
 
 }
