@@ -43,8 +43,9 @@ public class PrimaryController {
         final DirectoryChooser directoryChooser = new DirectoryChooser();
         final File selectedDirectory = directoryChooser.showDialog(stage);
         if (selectedDirectory != null) {
-            String dir = selectedDirectory.getAbsolutePath();
-            chosenPathToDarknetTextField.setText(dir);
+            String directory = selectedDirectory.getAbsolutePath();
+            chosenPathToDarknetTextField.setText(directory);
+            dir = selectedDirectory;
             res = true;
             //System.out.println(dir);
         }
@@ -71,6 +72,8 @@ public class PrimaryController {
                 System.out.println ("exit: " + p.exitValue());
                 p.destroy();
                 res = true;
+                File directoryToDarknet = new File(dir.getAbsolutePath().concat("/darknet"));
+                dir = directoryToDarknet;
             } catch (Exception e) {
                 System.out.println(e.getStackTrace());
                 e.printStackTrace();
@@ -102,6 +105,7 @@ public class PrimaryController {
     @FXML
     private void checkAndNextScreen() throws IOException {
         if (res) {
+            System.out.println("Path to darknet: " + dir.getAbsolutePath());
             App.setRoot("secondary");
         }
         else {

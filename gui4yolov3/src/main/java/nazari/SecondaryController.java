@@ -1,7 +1,9 @@
 package nazari;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.ResourceBundle;
 
@@ -30,7 +32,7 @@ public class SecondaryController {
     @FXML // fx:id="yolov3CfgCheckBox"
     private CheckBox yolov3CfgCheckBox; // Value injected by FXMLLoader
 
-    @FXML // fx:id="yolo3tinyCfgCheckBox"
+    @FXML // fx:id="yolov3tinyCfgCheckBox"
     private CheckBox yolov3tinyCfgCheckBox; // Value injected by FXMLLoader
 
     @FXML // fx:id="chooseCfgFileButton"
@@ -44,6 +46,22 @@ public class SecondaryController {
         if (yolov3CfgCheckBox.isSelected()) {
             yolov3tinyCfgCheckBox.setSelected(false);
             pathToCfgFileTextField.setText("");
+
+            String s;
+            Process p;
+            /*try {
+                p = Runtime.getRuntime().exec("ls", null, dir);
+                BufferedReader br = new BufferedReader(
+                    new InputStreamReader(p.getInputStream()));
+                while ((s = br.readLine()) != null)
+                    System.out.println("line: " + s);
+                p.waitFor();
+                System.out.println ("exit: " + p.exitValue());
+                p.destroy();
+            } catch (Exception e) {
+                System.out.println(e.getStackTrace());
+                e.printStackTrace();
+            }*/
         }
     }
 
