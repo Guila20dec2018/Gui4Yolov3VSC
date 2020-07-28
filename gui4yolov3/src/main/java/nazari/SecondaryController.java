@@ -22,6 +22,7 @@ import javafx.stage.Stage;
 
 public class SecondaryController {
 
+    private File directoryToDarknet;
 
     @FXML // ResourceBundle that was given to the FXMLLoader
     private ResourceBundle resources;
@@ -32,6 +33,9 @@ public class SecondaryController {
     @FXML // fx:id="containerTabPane"
     private TabPane containerTabPane; // Value injected by FXMLLoader
 
+    /**
+     * Config file
+     */
     @FXML // fx:id="yolov3CfgCheckBox"
     private CheckBox yolov3CfgCheckBox; // Value injected by FXMLLoader
 
@@ -43,36 +47,59 @@ public class SecondaryController {
 
     @FXML // fx:id="pathToCfgFileTextField"
     private TextField pathToCfgFileTextField; // Value injected by FXMLLoader
-
-    private File directoryToDarknet;
+    
     private File cfgFile;
 
-    private boolean lookingForCfgFile(String cfgFileName) {
+    /**
+     * Weigths file
+     */
+    @FXML // fx:id="yolov3WeigthsCheckBox"
+    private CheckBox yolov3WeigthsCheckBox; // Value injected by FXMLLoader
+
+    @FXML // fx:id="darknetConv74CheckBox"
+    private CheckBox darknetConv74CheckBox; // Value injected by FXMLLoader
+
+    @FXML // fx:id="chooseWeightsFileButton"
+    private Button chooseWeightsFileButton; // Value injected by FXMLLoader
+
+    @FXML // fx:id="pathToWeightsFileTextField"
+    private TextField pathToWeightsFileTextField; // Value injected by FXMLLoader
+
+    private File weigthsFile;
+
+
+    private boolean lookingForFile(String fileName, String subDirectory) {
         boolean find = false;
 
-            String s;
-            Process p;
-            try {
-                File pathToCfgDirectory = new File(directoryToDarknet.getAbsolutePath().concat("/cfg"));
-                p = Runtime.getRuntime().exec("ls", null, pathToCfgDirectory);
-                BufferedReader br = new BufferedReader(
-                    new InputStreamReader(p.getInputStream()));
-                while ((s = br.readLine()) != null) {
-                    if (s.equalsIgnoreCase(cfgFileName)) {
-                        find = true;
-                        //if find the file save the "pointer"
-                        cfgFile = new File(pathToCfgDirectory.getAbsolutePath().concat("/" + cfgFileName));
+        String s;
+        Process p;
+        try {
+            File dir = new File(directoryToDarknet.getAbsolutePath().concat("/" + subDirectory));
+            p = Runtime.getRuntime().exec("ls", null, dir);
+            BufferedReader br = new BufferedReader(
+                new InputStreamReader(p.getInputStream()));
+            while ((s = br.readLine()) != null) {
+                if (s.equalsIgnoreCase(fileName)) {
+                    find = true;
+                    //if find the file save the "pointer"
+                    if (subDirectory.equalsIgnoreCase("cfg")) {
+                        cfgFile = new File(dir.getAbsolutePath().concat("/" + fileName));
                         System.out.println("Pointer to cfg file: " + cfgFile.getAbsolutePath());
                     }
-                    System.out.println("line: " + s);
+                    else if (subDirectory.equalsIgnoreCase("")) {
+                        weigthsFile = new File(dir.getAbsolutePath().concat("/" + fileName));
+                        System.out.println("Pointer to weights file: " + weigthsFile.getAbsolutePath());
+                    }
                 }
-                p.waitFor();
-                System.out.println ("exit: " + p.exitValue());
-                p.destroy();
-            } catch (Exception e) {
-                System.out.println(e.getStackTrace());
-                e.printStackTrace();
+                System.out.println("line: " + s);
             }
+            p.waitFor();
+            System.out.println ("exit: " + p.exitValue());
+            p.destroy();
+        } catch (Exception e) {
+            System.out.println(e.getStackTrace());
+            e.printStackTrace();
+        }
 
         return find;
     }
@@ -80,11 +107,8 @@ public class SecondaryController {
     @FXML
     void changeStateYolov3CfgCheckBox(ActionEvent event) {
         if (yolov3CfgCheckBox.isSelected()) {
-            yolov3tinyCfgCheckBox.setSelected(false);
-            pathToCfgFileTextField.setText("");
-
             //look for the file in .../darknet/cfg
-            if (!lookingForCfgFile("yolov3.cfg")) {
+            if (!lookingForFile("yolov3.cfg", "cfg")) {
                 Alert alert = new Alert(AlertType.WARNING, "Assicurati di avere il file yolov3.cfg sotto .../darknet/cfg!");
                 Optional<ButtonType> result = alert.showAndWait();
                 if (result.isPresent() && result.get() == ButtonType.OK) {
@@ -92,17 +116,18 @@ public class SecondaryController {
                     yolov3CfgCheckBox.setSelected(false);
                 }
             }
+            else {
+                yolov3tinyCfgCheckBox.setSelected(false);
+                pathToCfgFileTextField.setText("");
+            }
         }
     }
 
     @FXML
     void changeStateYolov3tinyCfgCheckBox(ActionEvent event) {
         if (yolov3tinyCfgCheckBox.isSelected()) {
-            yolov3CfgCheckBox.setSelected(false);
-            pathToCfgFileTextField.setText("");
-
             //look for the file in .../darknet/cfg
-            if (!lookingForCfgFile("yolov3-tiny.cfg")) {
+            if (!lookingForFile("yolov3-tiny.cfg", "cfg")) {
                 Alert alert = new Alert(AlertType.WARNING, "Assicurati di avere il file yolov3-tiny.cfg sotto .../darknet/cfg!");
                 Optional<ButtonType> result = alert.showAndWait();
                 if (result.isPresent() && result.get() == ButtonType.OK) {
@@ -110,11 +135,15 @@ public class SecondaryController {
                     yolov3tinyCfgCheckBox.setSelected(false);
                 }
             }
+            else {
+                yolov3CfgCheckBox.setSelected(false);
+                pathToCfgFileTextField.setText("");
+            }
         }
     }
 
-    private static void configureFileChooser(final FileChooser fileChooser){
-        fileChooser.setTitle("Scegli il file di configurazione");
+    private static void configureFileChooser(final FileChooser fileChooser, String fileType){
+        fileChooser.setTitle("Scegli il file di " + fileType);
         fileChooser.setInitialDirectory(
             new File(System.getProperty("user.home"))
         );
@@ -125,7 +154,7 @@ public class SecondaryController {
         Stage stage = (Stage) containerTabPane.getScene().getWindow();
 
         final FileChooser fileChooser = new FileChooser();
-        configureFileChooser(fileChooser);
+        configureFileChooser(fileChooser, "configurazione");
         File selectedFile = fileChooser.showOpenDialog(stage);
 
         if (selectedFile != null) {
@@ -140,12 +169,75 @@ public class SecondaryController {
 
     }
 
+
+    @FXML
+    void changeStateYolov3WeigthsCheckBox(ActionEvent event) {
+        if (yolov3WeigthsCheckBox.isSelected()) {
+            //look for the file in .../darknet/cfg
+            if (!lookingForFile("yolov3.weights", "")) {
+                Alert alert = new Alert(AlertType.WARNING, "Assicurati di avere il file yolov3.weights sotto .../darknet!");
+                Optional<ButtonType> result = alert.showAndWait();
+                if (result.isPresent() && result.get() == ButtonType.OK) {
+                    //formatSystem();
+                    yolov3WeigthsCheckBox.setSelected(false);
+                }
+            }
+            else {
+                darknetConv74CheckBox.setSelected(false);
+                pathToWeightsFileTextField.setText("");
+            }
+        }
+    }
+
+    @FXML
+    void changeStateDarknetConv74CheckBox(ActionEvent event) {
+        if (darknetConv74CheckBox.isSelected()) {
+            //look for the file in .../darknet/cfg
+            if (!lookingForFile("darknet53.conv.74", "")) {
+                Alert alert = new Alert(AlertType.WARNING, "Assicurati di avere il file darknet53.conv.74 sotto .../darknet!");
+                Optional<ButtonType> result = alert.showAndWait();
+                if (result.isPresent() && result.get() == ButtonType.OK) {
+                    //formatSystem();
+                    darknetConv74CheckBox.setSelected(false);
+                }
+            }
+            else {
+                yolov3WeigthsCheckBox.setSelected(false);
+                pathToWeightsFileTextField.setText("");
+            }
+        }
+    }
+
+    @FXML
+    void handleChooseWeightsFileButtonClick(ActionEvent event) {
+        Stage stage = (Stage) containerTabPane.getScene().getWindow();
+
+        final FileChooser fileChooser = new FileChooser();
+        configureFileChooser(fileChooser, "pesi");
+        File selectedFile = fileChooser.showOpenDialog(stage);
+
+        if (selectedFile != null) {
+            String selectedFilePath = selectedFile.getAbsolutePath();
+            pathToWeightsFileTextField.setText(selectedFilePath);
+            weigthsFile = selectedFile;
+            System.out.println("Pointer to weights file: " + weigthsFile.getAbsolutePath());
+            //System.out.println(selectedFilePath);
+            yolov3WeigthsCheckBox.setSelected(false);
+            darknetConv74CheckBox.setSelected(false);
+        }
+    }
+    
     @FXML // This method is called by the FXMLLoader when initialization is complete
     void initialize() {
         assert yolov3CfgCheckBox != null : "fx:id=\"yolov3CfgCheckBox\" was not injected: check your FXML file 'secondary.fxml'.";
         assert yolov3tinyCfgCheckBox != null : "fx:id=\"yolo3tinyCfgCheckBox\" was not injected: check your FXML file 'secondary.fxml'.";
         assert chooseCfgFileButton != null : "fx:id=\"chooseCfgFileButton\" was not injected: check your FXML file 'secondary.fxml'.";
         assert pathToCfgFileTextField != null : "fx:id=\"pathToCfgFileTextField\" was not injected: check your FXML file 'secondary.fxml'.";
+        
+        assert yolov3WeigthsCheckBox != null : "fx:id=\"yolov3WeigthsCheckBox\" was not injected: check your FXML file 'secondary.fxml'.";
+        assert darknetConv74CheckBox != null : "fx:id=\"darknetConv74CheckBox\" was not injected: check your FXML file 'secondary.fxml'.";
+        assert chooseWeightsFileButton != null : "fx:id=\"chooseWeightsFileButton\" was not injected: check your FXML file 'secondary.fxml'.";
+        assert pathToWeightsFileTextField != null : "fx:id=\"pathToWeightsFileTextField\" was not injected: check your FXML file 'secondary.fxml'.";
 
         directoryToDarknet = new File(App.getDarknetPath());
 
