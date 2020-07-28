@@ -106,6 +106,7 @@ public class PrimaryController {
     private void checkAndNextScreen() throws IOException {
         if (res) {
             System.out.println("Path to darknet: " + dir.getAbsolutePath());
+            App.setDarknetPath(dir.getAbsolutePath());
             App.setRoot("secondary");
         }
         else {
