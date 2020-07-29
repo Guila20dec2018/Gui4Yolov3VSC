@@ -270,12 +270,40 @@ public class SecondaryController {
 
     @FXML
     void changeStateEagleImgCheckBox(ActionEvent event) {
-
+        if (eagleImgCheckBox.isSelected()) {
+            //look for the file in .../darknet/cfg
+            if (!lookingForFile("eagle.jpg", "data")) {
+                Alert alert = new Alert(AlertType.WARNING, "Assicurati di avere il file eagle.jpg sotto .../darknet/data!");
+                Optional<ButtonType> result = alert.showAndWait();
+                if (result.isPresent() && result.get() == ButtonType.OK) {
+                    //formatSystem();
+                    eagleImgCheckBox.setSelected(false);
+                }
+            }
+            else {
+                dogImgCheckBox.setSelected(false);
+                pathToDetectImgTextField.setText("");
+            }
+        }
     }
 
     @FXML
     void handleChooseDetectImgButtonClick(ActionEvent event) {
+        Stage stage = (Stage) containerTabPane.getScene().getWindow();
 
+        final FileChooser fileChooser = new FileChooser();
+        configureFileChooser(fileChooser, "prova (Immagine da Individuare oggetti)");
+        File selectedFile = fileChooser.showOpenDialog(stage);
+
+        if (selectedFile != null) {
+            String selectedFilePath = selectedFile.getAbsolutePath();
+            pathToDetectImgTextField.setText(selectedFilePath);
+            detectImgFile = selectedFile;
+            System.out.println("Pointer to detect image file: " + detectImgFile.getAbsolutePath());
+            //System.out.println(selectedFilePath);
+            dogImgCheckBox.setSelected(false);
+            eagleImgCheckBox.setSelected(false);
+        }
     }
 
 
