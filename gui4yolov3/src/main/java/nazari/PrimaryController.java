@@ -8,6 +8,8 @@ import java.util.Optional;
 
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
@@ -40,8 +42,6 @@ public class PrimaryController {
 
    @FXML
     private void browseLocalDarknetDirectory(ActionEvent event) {
-        //Path path;
-
         Stage stage = (Stage) primaryTitledPane.getScene().getWindow();
 
         final DirectoryChooser directoryChooser = new DirectoryChooser();
@@ -56,6 +56,15 @@ public class PrimaryController {
         }
 
         //System.out.println("Eseguito metodo browseLocalDarknetDirectory");
+    }
+
+    private void getTextOnInputChangedLocalDarknetDirectoryTextField() {
+        //System.out.println(localDarknetDirectoryStringProperty.get());
+        String typedFile = localDarknetDirectoryStringProperty.get();
+        dir = new File(typedFile);
+        System.out.println("Pointer to local darknet directory: " + dir.getAbsolutePath());
+        //System.out.println(selectedFilePath);
+        directoryToDownloadDarknetTextField.setText("");
     }
 
     @FXML
@@ -108,6 +117,15 @@ public class PrimaryController {
         }
     }
 
+    private void getTextOnInputChangedDirectoryToDownloadDarknetTextField() {
+        //System.out.println(localDarknetDirectoryStringProperty.get());
+        String typedFile = directoryToDownloadDarknetStringProperty.get();
+        dir = new File(typedFile);
+        System.out.println("Pointer to directory to download darknet: " + dir.getAbsolutePath());
+        //System.out.println(selectedFilePath);
+        chosenPathToDarknetTextField.setText("");
+    }
+
     @FXML
     private void checkAndNextScreen() throws IOException {
         if (res) {
@@ -138,6 +156,40 @@ public class PrimaryController {
 
         chosenPathToDarknetTextField.textProperty().bindBidirectional(localDarknetDirectoryStringProperty);
         directoryToDownloadDarknetTextField.textProperty().bindBidirectional(directoryToDownloadDarknetStringProperty);
+
+        chosenPathToDarknetTextField.focusedProperty().addListener(new ChangeListener<Boolean>(){
+            @Override
+            public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+                // Auto-generated method stub
+                if (!newValue) {
+                    System.out.println("Focusing out from chosenPathToDarknetTextField!");
+                    if (localDarknetDirectoryStringProperty.get() == null || localDarknetDirectoryStringProperty.get().equalsIgnoreCase("")) {
+                        System.out.println("invalid path");
+                    }
+                    else {
+                        getTextOnInputChangedLocalDarknetDirectoryTextField();
+                    }
+                }
+            }
+            
+        });
+
+        directoryToDownloadDarknetTextField.focusedProperty().addListener(new ChangeListener<Boolean>(){
+            @Override
+            public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+                // Auto-generated method stub
+                if (!newValue) {
+                    System.out.println("Focusing out from directoryToDownloadDarknetTextField!");
+                    if (directoryToDownloadDarknetStringProperty.get() == null || directoryToDownloadDarknetStringProperty.get().equalsIgnoreCase("")) {
+                        System.out.println("invalid path");
+                    }
+                    else {
+                        getTextOnInputChangedDirectoryToDownloadDarknetTextField();
+                    }
+                }
+            }
+            
+        });
     }
 
 }
