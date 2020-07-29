@@ -67,6 +67,23 @@ public class SecondaryController {
 
     private File weigthsFile;
 
+    /**
+     * Detect image
+     */
+    @FXML // fx:id="dogImgCheckBox"
+    private CheckBox dogImgCheckBox; // Value injected by FXMLLoader
+
+    @FXML // fx:id="eagleImgCheckBox"
+    private CheckBox eagleImgCheckBox; // Value injected by FXMLLoader
+
+    @FXML // fx:id="chooseDetectImgButton"
+    private Button chooseDetectImgButton; // Value injected by FXMLLoader
+
+    @FXML // fx:id="pathToDetectImgTextField"
+    private TextField pathToDetectImgTextField; // Value injected by FXMLLoader
+
+    private File detectImgFile;
+
 
     private boolean lookingForFile(String fileName, String subDirectory) {
         boolean find = false;
@@ -89,6 +106,10 @@ public class SecondaryController {
                     else if (subDirectory.equalsIgnoreCase("")) {
                         weigthsFile = new File(dir.getAbsolutePath().concat("/" + fileName));
                         System.out.println("Pointer to weights file: " + weigthsFile.getAbsolutePath());
+                    }
+                    else if (subDirectory.equalsIgnoreCase("data")) {
+                        detectImgFile = new File(dir.getAbsolutePath().concat("/" + fileName));
+                        System.out.println("Pointer to detect image file: " + detectImgFile.getAbsolutePath());
                     }
                 }
                 System.out.println("line: " + s);
@@ -227,6 +248,37 @@ public class SecondaryController {
         }
     }
     
+
+    @FXML
+    void changeStateDogImgCheckBox(ActionEvent event) {
+        if (dogImgCheckBox.isSelected()) {
+            //look for the file in .../darknet/cfg
+            if (!lookingForFile("dog.jpg", "data")) {
+                Alert alert = new Alert(AlertType.WARNING, "Assicurati di avere il file dog.jpg sotto .../darknet/data!");
+                Optional<ButtonType> result = alert.showAndWait();
+                if (result.isPresent() && result.get() == ButtonType.OK) {
+                    //formatSystem();
+                    dogImgCheckBox.setSelected(false);
+                }
+            }
+            else {
+                eagleImgCheckBox.setSelected(false);
+                pathToDetectImgTextField.setText("");
+            }
+        }
+    }
+
+    @FXML
+    void changeStateEagleImgCheckBox(ActionEvent event) {
+
+    }
+
+    @FXML
+    void handleChooseDetectImgButtonClick(ActionEvent event) {
+
+    }
+
+
     @FXML // This method is called by the FXMLLoader when initialization is complete
     void initialize() {
         assert yolov3CfgCheckBox != null : "fx:id=\"yolov3CfgCheckBox\" was not injected: check your FXML file 'secondary.fxml'.";
@@ -238,6 +290,11 @@ public class SecondaryController {
         assert darknetConv74CheckBox != null : "fx:id=\"darknetConv74CheckBox\" was not injected: check your FXML file 'secondary.fxml'.";
         assert chooseWeightsFileButton != null : "fx:id=\"chooseWeightsFileButton\" was not injected: check your FXML file 'secondary.fxml'.";
         assert pathToWeightsFileTextField != null : "fx:id=\"pathToWeightsFileTextField\" was not injected: check your FXML file 'secondary.fxml'.";
+
+        assert dogImgCheckBox != null : "fx:id=\"dogImgCheckBox\" was not injected: check your FXML file 'secondary.fxml'.";
+        assert eagleImgCheckBox != null : "fx:id=\"eagleImgCheckBox\" was not injected: check your FXML file 'secondary.fxml'.";
+        assert chooseDetectImgButton != null : "fx:id=\"chooseDetectImgButton\" was not injected: check your FXML file 'secondary.fxml'.";
+        assert pathToDetectImgTextField != null : "fx:id=\"pathToDetectImgTextField\" was not injected: check your FXML file 'secondary.fxml'.";
 
         directoryToDarknet = new File(App.getDarknetPath());
 
