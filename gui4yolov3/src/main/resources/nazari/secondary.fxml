@@ -72,7 +72,7 @@
                      <content>
                         <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0">
                            <children>
-                              <CheckBox fx:id="yolov3WeigthsCheckBox" mnemonicParsing="false" text="yolov3.weights" onAction="#changeStateYolov3WeigthsCheckBox">
+                              <CheckBox fx:id="yolov3WeigthsCheckBox" mnemonicParsing="false" onAction="#changeStateYolov3WeigthsCheckBox" text="yolov3.weights">
                                  <padding>
                                     <Insets bottom="10.0" left="5.0" right="5.0" top="10.0" />
                                  </padding>
@@ -80,7 +80,7 @@
                                     <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
                                  </HBox.margin>
                               </CheckBox>
-                              <CheckBox fx:id="darknetConv74CheckBox" mnemonicParsing="false" text="darknet.conv.74" onAction="#changeStateDarknetConv74CheckBox">
+                              <CheckBox fx:id="darknetConv74CheckBox" mnemonicParsing="false" onAction="#changeStateDarknetConv74CheckBox" text="darknet.conv.74">
                                  <padding>
                                     <Insets bottom="10.0" left="5.0" right="5.0" top="10.0" />
                                  </padding>
@@ -96,7 +96,7 @@
                                     <Insets bottom="10.0" left="20.0" right="5.0" top="10.0" />
                                  </HBox.margin>
                               </Label>
-                              <Button fx:id="chooseWeightsFileButton" mnemonicParsing="false" text="Browse" onAction="#handleChooseWeightsFileButtonClick">
+                              <Button fx:id="chooseWeightsFileButton" mnemonicParsing="false" onAction="#handleChooseWeightsFileButtonClick" text="Browse">
                                  <HBox.margin>
                                     <Insets bottom="10.0" left="5.0" right="10.0" top="10.0" />
                                  </HBox.margin>
@@ -117,7 +117,7 @@
                      <content>
                         <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0">
                            <children>
-                              <CheckBox mnemonicParsing="false" text="data/dog.jpg">
+                              <CheckBox fx:id="dogImgCheckBox" mnemonicParsing="false" onAction="#changeStateDogImgCheckBox" text="data/dog.jpg">
                                  <HBox.margin>
                                     <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
                                  </HBox.margin>
@@ -125,7 +125,7 @@
                                     <Insets bottom="10.0" left="5.0" right="5.0" top="10.0" />
                                  </padding>
                               </CheckBox>
-                              <CheckBox mnemonicParsing="false" text="data/eagle.jpg">
+                              <CheckBox fx:id="eagleImgCheckBox" mnemonicParsing="false" onAction="#changeStateEagleImgCheckBox" text="data/eagle.jpg">
                                  <HBox.margin>
                                     <Insets bottom="10.0" left="10.0" right="20.0" top="10.0" />
                                  </HBox.margin>
@@ -133,7 +133,7 @@
                                     <Insets bottom="10.0" left="5.0" right="5.0" top="10.0" />
                                  </padding>
                               </CheckBox>
-                              <Label text="Scegli">
+                              <Label text="Scegli:">
                                  <HBox.margin>
                                     <Insets bottom="10.0" left="20.0" right="5.0" top="10.0" />
                                  </HBox.margin>
@@ -141,12 +141,12 @@
                                     <Insets bottom="10.0" left="5.0" right="5.0" top="10.0" />
                                  </padding>
                               </Label>
-                              <Button mnemonicParsing="false" text="Button">
+                              <Button fx:id="chooseDetectImgButton" mnemonicParsing="false" onAction="#handleChooseDetectImgButtonClick" text="Browse">
                                  <HBox.margin>
                                     <Insets bottom="10.0" left="5.0" right="10.0" top="10.0" />
                                  </HBox.margin>
                               </Button>
-                              <TextField prefHeight="26.0" prefWidth="240.0" promptText="Cammino">
+                              <TextField fx:id="pathToDetectImgTextField" prefHeight="26.0" prefWidth="240.0" promptText="Cammino">
                                  <HBox.margin>
                                     <Insets bottom="10.0" left="5.0" right="5.0" top="10.0" />
                                  </HBox.margin>

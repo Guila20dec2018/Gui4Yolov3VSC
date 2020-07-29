@@ -8,6 +8,10 @@ import java.net.URL;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
@@ -67,6 +71,28 @@ public class SecondaryController {
 
     private File weigthsFile;
 
+    /**
+     * Detect image
+     */
+    @FXML // fx:id="dogImgCheckBox"
+    private CheckBox dogImgCheckBox; // Value injected by FXMLLoader
+
+    @FXML // fx:id="eagleImgCheckBox"
+    private CheckBox eagleImgCheckBox; // Value injected by FXMLLoader
+
+    @FXML // fx:id="chooseDetectImgButton"
+    private Button chooseDetectImgButton; // Value injected by FXMLLoader
+
+    @FXML // fx:id="pathToDetectImgTextField"
+    private TextField pathToDetectImgTextField; // Value injected by FXMLLoader
+
+    private File detectImgFile;
+
+
+    private final StringProperty cfgStringProperty = new SimpleStringProperty();
+    private final StringProperty weightsProperty = new SimpleStringProperty();
+    private final StringProperty detectImgStringProperty = new SimpleStringProperty();
+
 
     private boolean lookingForFile(String fileName, String subDirectory) {
         boolean find = false;
@@ -89,6 +115,10 @@ public class SecondaryController {
                     else if (subDirectory.equalsIgnoreCase("")) {
                         weigthsFile = new File(dir.getAbsolutePath().concat("/" + fileName));
                         System.out.println("Pointer to weights file: " + weigthsFile.getAbsolutePath());
+                    }
+                    else if (subDirectory.equalsIgnoreCase("data")) {
+                        detectImgFile = new File(dir.getAbsolutePath().concat("/" + fileName));
+                        System.out.println("Pointer to detect image file: " + detectImgFile.getAbsolutePath());
                     }
                 }
                 System.out.println("line: " + s);
@@ -159,7 +189,8 @@ public class SecondaryController {
 
         if (selectedFile != null) {
             String selectedFilePath = selectedFile.getAbsolutePath();
-            pathToCfgFileTextField.setText(selectedFilePath);
+            cfgStringProperty.set(selectedFilePath);
+            //pathToCfgFileTextField.setText(selectedFilePath);
             cfgFile = selectedFile;
             System.out.println("Pointer to cfg file: " + cfgFile.getAbsolutePath());
             //System.out.println(selectedFilePath);
@@ -218,7 +249,8 @@ public class SecondaryController {
 
         if (selectedFile != null) {
             String selectedFilePath = selectedFile.getAbsolutePath();
-            pathToWeightsFileTextField.setText(selectedFilePath);
+            weightsProperty.set(selectedFilePath);
+            //pathToWeightsFileTextField.setText(selectedFilePath);
             weigthsFile = selectedFile;
             System.out.println("Pointer to weights file: " + weigthsFile.getAbsolutePath());
             //System.out.println(selectedFilePath);
@@ -227,6 +259,76 @@ public class SecondaryController {
         }
     }
     
+
+    @FXML
+    void changeStateDogImgCheckBox(ActionEvent event) {
+        if (dogImgCheckBox.isSelected()) {
+            //look for the file in .../darknet/cfg
+            if (!lookingForFile("dog.jpg", "data")) {
+                Alert alert = new Alert(AlertType.WARNING, "Assicurati di avere il file dog.jpg sotto .../darknet/data!");
+                Optional<ButtonType> result = alert.showAndWait();
+                if (result.isPresent() && result.get() == ButtonType.OK) {
+                    //formatSystem();
+                    dogImgCheckBox.setSelected(false);
+                }
+            }
+            else {
+                eagleImgCheckBox.setSelected(false);
+                pathToDetectImgTextField.setText("");
+            }
+        }
+    }
+
+    @FXML
+    void changeStateEagleImgCheckBox(ActionEvent event) {
+        if (eagleImgCheckBox.isSelected()) {
+            //look for the file in .../darknet/cfg
+            if (!lookingForFile("eagle.jpg", "data")) {
+                Alert alert = new Alert(AlertType.WARNING, "Assicurati di avere il file eagle.jpg sotto .../darknet/data!");
+                Optional<ButtonType> result = alert.showAndWait();
+                if (result.isPresent() && result.get() == ButtonType.OK) {
+                    //formatSystem();
+                    eagleImgCheckBox.setSelected(false);
+                }
+            }
+            else {
+                dogImgCheckBox.setSelected(false);
+                pathToDetectImgTextField.setText("");
+            }
+        }
+    }
+
+    @FXML
+    void handleChooseDetectImgButtonClick(ActionEvent event) {
+        Stage stage = (Stage) containerTabPane.getScene().getWindow();
+
+        final FileChooser fileChooser = new FileChooser();
+        configureFileChooser(fileChooser, "prova (Immagine da Individuare oggetti)");
+        File selectedFile = fileChooser.showOpenDialog(stage);
+
+        if (selectedFile != null) {
+            String selectedFilePath = selectedFile.getAbsolutePath();
+            detectImgStringProperty.set(selectedFilePath);
+            //pathToDetectImgTextField.setText(selectedFilePath);
+            detectImgFile = selectedFile;
+            System.out.println("Pointer to detect image file: " + detectImgFile.getAbsolutePath());
+            //System.out.println(selectedFilePath);
+            dogImgCheckBox.setSelected(false);
+            eagleImgCheckBox.setSelected(false);
+        }
+    }
+
+    @FXML
+    private void getTextOnInputChangedTextField() {
+        System.out.println(detectImgStringProperty.get());
+        String typedFile = detectImgStringProperty.get();
+        detectImgFile = new File(typedFile);
+        System.out.println("Pointer to detect image file: " + detectImgFile.getAbsolutePath());
+        //System.out.println(selectedFilePath);
+        dogImgCheckBox.setSelected(false);
+        eagleImgCheckBox.setSelected(false);
+    }
+
     @FXML // This method is called by the FXMLLoader when initialization is complete
     void initialize() {
         assert yolov3CfgCheckBox != null : "fx:id=\"yolov3CfgCheckBox\" was not injected: check your FXML file 'secondary.fxml'.";
@@ -239,7 +341,33 @@ public class SecondaryController {
         assert chooseWeightsFileButton != null : "fx:id=\"chooseWeightsFileButton\" was not injected: check your FXML file 'secondary.fxml'.";
         assert pathToWeightsFileTextField != null : "fx:id=\"pathToWeightsFileTextField\" was not injected: check your FXML file 'secondary.fxml'.";
 
+        assert dogImgCheckBox != null : "fx:id=\"dogImgCheckBox\" was not injected: check your FXML file 'secondary.fxml'.";
+        assert eagleImgCheckBox != null : "fx:id=\"eagleImgCheckBox\" was not injected: check your FXML file 'secondary.fxml'.";
+        assert chooseDetectImgButton != null : "fx:id=\"chooseDetectImgButton\" was not injected: check your FXML file 'secondary.fxml'.";
+        assert pathToDetectImgTextField != null : "fx:id=\"pathToDetectImgTextField\" was not injected: check your FXML file 'secondary.fxml'.";
+
         directoryToDarknet = new File(App.getDarknetPath());
+        pathToCfgFileTextField.textProperty().bindBidirectional(cfgStringProperty);
+        pathToWeightsFileTextField.textProperty().bindBidirectional(weightsProperty);
+        pathToDetectImgTextField.textProperty().bindBidirectional(detectImgStringProperty);
+
+
+        pathToDetectImgTextField.focusedProperty().addListener(new ChangeListener<Boolean>(){
+            @Override
+            public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+                // Auto-generated method stub
+                if (!newValue) {
+                    System.out.println("Focusing out from textfield!");
+                    if (detectImgStringProperty.get() == null || detectImgStringProperty.get().equalsIgnoreCase("")) {
+                        System.out.println("invalid path");
+                    }
+                    else {
+                        getTextOnInputChangedTextField();
+                    }
+                }
+            }
+            
+        });
 
     }
 
