@@ -318,9 +318,8 @@ public class SecondaryController {
         }
     }
 
-    @FXML
     private void getTextOnInputChangedTextField() {
-        System.out.println(detectImgStringProperty.get());
+        //System.out.println(detectImgStringProperty.get());
         String typedFile = detectImgStringProperty.get();
         detectImgFile = new File(typedFile);
         System.out.println("Pointer to detect image file: " + detectImgFile.getAbsolutePath());
