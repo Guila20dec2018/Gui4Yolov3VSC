@@ -72,8 +72,9 @@ public class PrimaryController {
         //download darknet from https://github.com/pjreddie/darknet if installed git or 
         //https://github.com/pjreddie/darknet/archive/master.zip if installed unzip or something similary
 
-        if (dir != null) {
-            System.out.println("Downloading darknet...");
+        if (dir != null && (directoryToDownloadDarknetStringProperty.get() != null && 
+                !directoryToDownloadDarknetStringProperty.get().equalsIgnoreCase(""))) {
+            System.out.println("Downloading darknet in " + dir.getAbsolutePath());
             String s;
             Process p;
             try {
