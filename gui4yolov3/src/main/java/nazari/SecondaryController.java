@@ -8,6 +8,10 @@ import java.net.URL;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
@@ -83,6 +87,11 @@ public class SecondaryController {
     private TextField pathToDetectImgTextField; // Value injected by FXMLLoader
 
     private File detectImgFile;
+
+
+    private final StringProperty cfgStringProperty = new SimpleStringProperty();
+    private final StringProperty weightsProperty = new SimpleStringProperty();
+    private final StringProperty detectImgStringProperty = new SimpleStringProperty();
 
 
     private boolean lookingForFile(String fileName, String subDirectory) {
@@ -180,7 +189,8 @@ public class SecondaryController {
 
         if (selectedFile != null) {
             String selectedFilePath = selectedFile.getAbsolutePath();
-            pathToCfgFileTextField.setText(selectedFilePath);
+            cfgStringProperty.set(selectedFilePath);
+            //pathToCfgFileTextField.setText(selectedFilePath);
             cfgFile = selectedFile;
             System.out.println("Pointer to cfg file: " + cfgFile.getAbsolutePath());
             //System.out.println(selectedFilePath);
@@ -239,7 +249,8 @@ public class SecondaryController {
 
         if (selectedFile != null) {
             String selectedFilePath = selectedFile.getAbsolutePath();
-            pathToWeightsFileTextField.setText(selectedFilePath);
+            weightsProperty.set(selectedFilePath);
+            //pathToWeightsFileTextField.setText(selectedFilePath);
             weigthsFile = selectedFile;
             System.out.println("Pointer to weights file: " + weigthsFile.getAbsolutePath());
             //System.out.println(selectedFilePath);
@@ -297,7 +308,8 @@ public class SecondaryController {
 
         if (selectedFile != null) {
             String selectedFilePath = selectedFile.getAbsolutePath();
-            pathToDetectImgTextField.setText(selectedFilePath);
+            detectImgStringProperty.set(selectedFilePath);
+            //pathToDetectImgTextField.setText(selectedFilePath);
             detectImgFile = selectedFile;
             System.out.println("Pointer to detect image file: " + detectImgFile.getAbsolutePath());
             //System.out.println(selectedFilePath);
@@ -306,6 +318,16 @@ public class SecondaryController {
         }
     }
 
+    @FXML
+    private void getTextOnInputChangedTextField() {
+        System.out.println(detectImgStringProperty.get());
+        String typedFile = detectImgStringProperty.get();
+        detectImgFile = new File(typedFile);
+        System.out.println("Pointer to detect image file: " + detectImgFile.getAbsolutePath());
+        //System.out.println(selectedFilePath);
+        dogImgCheckBox.setSelected(false);
+        eagleImgCheckBox.setSelected(false);
+    }
 
     @FXML // This method is called by the FXMLLoader when initialization is complete
     void initialize() {
@@ -325,6 +347,27 @@ public class SecondaryController {
         assert pathToDetectImgTextField != null : "fx:id=\"pathToDetectImgTextField\" was not injected: check your FXML file 'secondary.fxml'.";
 
         directoryToDarknet = new File(App.getDarknetPath());
+        pathToCfgFileTextField.textProperty().bindBidirectional(cfgStringProperty);
+        pathToWeightsFileTextField.textProperty().bindBidirectional(weightsProperty);
+        pathToDetectImgTextField.textProperty().bindBidirectional(detectImgStringProperty);
+
+
+        pathToDetectImgTextField.focusedProperty().addListener(new ChangeListener<Boolean>(){
+            @Override
+            public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+                // Auto-generated method stub
+                if (!newValue) {
+                    System.out.println("Focusing out from textfield!");
+                    if (detectImgStringProperty.get() == null || detectImgStringProperty.get().equalsIgnoreCase("")) {
+                        System.out.println("invalid path");
+                    }
+                    else {
+                        getTextOnInputChangedTextField();
+                    }
+                }
+            }
+            
+        });
 
     }
 

@@ -6,6 +6,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Optional;
 
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
@@ -27,6 +29,8 @@ public class PrimaryController {
 
     private boolean res = false;
     private File dir = null;
+    private static StringProperty localDarknetDirectoryStringProperty = new SimpleStringProperty();
+    private static StringProperty directoryToDownloadDarknetStringProperty = new SimpleStringProperty();
 
     @FXML
     private void switchToSecondary() throws IOException {
@@ -44,7 +48,8 @@ public class PrimaryController {
         final File selectedDirectory = directoryChooser.showDialog(stage);
         if (selectedDirectory != null) {
             String directory = selectedDirectory.getAbsolutePath();
-            chosenPathToDarknetTextField.setText(directory);
+            localDarknetDirectoryStringProperty.set(directory);
+            //chosenPathToDarknetTextField.setText(directory);
             dir = selectedDirectory;
             res = true;
             //System.out.println(dir);
@@ -97,7 +102,8 @@ public class PrimaryController {
         final File selectedDirectory = directoryChooser.showDialog(stage);
         if (selectedDirectory != null) {
             String directory = selectedDirectory.getAbsolutePath();
-            directoryToDownloadDarknetTextField.setText(directory);
+            directoryToDownloadDarknetStringProperty.set(directory);
+            //directoryToDownloadDarknetTextField.setText(directory);
             dir = selectedDirectory;
         }
     }
@@ -130,6 +136,8 @@ public class PrimaryController {
         assert chosenPathToDarknetTextField != null : "fx:id=\"chosenPathToDarknetTextField\" was not injected: check your FXML file 'primary.fxml'.";
         assert directoryToDownloadDarknetTextField != null : "fx:id=\"directoryToDownloadDarknetTextField\" was not injected: check your FXML file 'primary.fxml'.";
 
+        chosenPathToDarknetTextField.textProperty().bindBidirectional(localDarknetDirectoryStringProperty);
+        directoryToDownloadDarknetTextField.textProperty().bindBidirectional(directoryToDownloadDarknetStringProperty);
     }
 
 }
