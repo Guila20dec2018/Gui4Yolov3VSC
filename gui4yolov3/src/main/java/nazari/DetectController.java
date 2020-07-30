@@ -100,6 +100,9 @@ public class DetectController {
     @FXML // fx:id="opencvCheckBox"
     private CheckBox opencvCheckBox; // Value injected by FXMLLoader
 
+    @FXML // fx:id="cudnnCheckBox"
+    private CheckBox cudnnCheckBox; // Value injected by FXMLLoader
+
     @FXML // fx:id="thresholdSpinner"
     private Spinner<?> thresholdSpinner; // Value injected by FXMLLoader
 
@@ -433,6 +436,11 @@ public class DetectController {
         else {
             changeFlagInMakefile("OPENCV", 0);
         }
+    }
+
+    @FXML
+    void changeStateCudnnCheckBox(ActionEvent event) {
+
     }
 
     @FXML
