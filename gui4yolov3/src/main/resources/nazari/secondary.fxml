@@ -164,7 +164,7 @@
                            <children>
                               <TitledPane animated="false" collapsible="false" prefHeight="200.0" prefWidth="200.0" text="GPU *">
                                  <content>
-                                    <CheckBox mnemonicParsing="false" text="GPU=1">
+                                    <CheckBox fx:id="gpuCheckBox" mnemonicParsing="false" text="GPU=1" onAction="#changeStateGpuCheckBox">
                                        <padding>
                                           <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
                                        </padding>
@@ -176,7 +176,7 @@
                               </TitledPane>
                               <TitledPane animated="false" collapsible="false" prefHeight="200.0" prefWidth="200.0" text="OpenCV *">
                                  <content>
-                                    <CheckBox mnemonicParsing="false" text="OPENCV=1">
+                                    <CheckBox fx:id="opencvCheckBox" mnemonicParsing="false" text="OPENCV=1" onAction="#changeStateOpencvCheckBox">
                                        <padding>
                                           <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
                                        </padding>
@@ -188,7 +188,7 @@
                               </TitledPane>
                               <TitledPane animated="false" collapsible="false" prefHeight="200.0" prefWidth="200.0" text="Confidenza">
                                  <content>
-                                    <Spinner editable="true" />
+                                    <Spinner fx:id="thresholdSpinner" editable="true" />
                                  </content>
                                  <HBox.margin>
                                     <Insets left="5.0" right="5.0" />
@@ -205,8 +205,8 @@
                               <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                            </padding>
                         </Label>
-                        <Button maxHeight="26.0" maxWidth="85.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="85.0" text="Compila" />
-                      <Button maxHeight="26.0" maxWidth="85.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="85.0" text="Avvia" />
+                        <Button fx:id="compileButton" maxHeight="26.0" maxWidth="85.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="85.0" text="Compila" onAction="#checkAndCompile" />
+                      <Button fx:id="detectButton" maxHeight="26.0" maxWidth="85.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="85.0" text="Avvia" onAction="#runDetector" />
                     </buttons>
                      <VBox.margin>
                         <Insets bottom="10.0" left="10.0" right="10.0" top="5.0" />
