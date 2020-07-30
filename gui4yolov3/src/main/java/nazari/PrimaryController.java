@@ -62,6 +62,7 @@ public class PrimaryController {
         //System.out.println(localDarknetDirectoryStringProperty.get());
         String typedFile = localDarknetDirectoryStringProperty.get();
         dir = new File(typedFile);
+        res = true;
         System.out.println("Pointer to local darknet directory: " + dir.getAbsolutePath());
         //System.out.println(selectedFilePath);
         directoryToDownloadDarknetTextField.setText("");
@@ -165,7 +166,11 @@ public class PrimaryController {
                 if (!newValue) {
                     System.out.println("Focusing out from chosenPathToDarknetTextField!");
                     if (localDarknetDirectoryStringProperty.get() == null || localDarknetDirectoryStringProperty.get().equalsIgnoreCase("")) {
-                        System.out.println("invalid path");
+                        System.out.println("chosenPathToDarknetTextField invalid path");
+                        dir = null; //to cover the case the user erase the text in textField
+                    }
+                    else if (dir != null && dir.getAbsolutePath().equalsIgnoreCase(localDarknetDirectoryStringProperty.get())) {
+                        System.out.println("Path chosenPathToDarknetTextField do not change");
                     }
                     else {
                         getTextOnInputChangedLocalDarknetDirectoryTextField();
@@ -182,7 +187,11 @@ public class PrimaryController {
                 if (!newValue) {
                     System.out.println("Focusing out from directoryToDownloadDarknetTextField!");
                     if (directoryToDownloadDarknetStringProperty.get() == null || directoryToDownloadDarknetStringProperty.get().equalsIgnoreCase("")) {
-                        System.out.println("invalid path");
+                        System.out.println("directoryToDownloadDarknetTextField invalid path");
+                        dir = null; //to cover the case the user erase the text in textField
+                    }
+                    else if (dir != null && dir.getAbsolutePath().equalsIgnoreCase(directoryToDownloadDarknetStringProperty.get())) {
+                        System.out.println("Path directoryToDownloadDarknetTextField do not change");
                     }
                     else {
                         getTextOnInputChangedDirectoryToDownloadDarknetTextField();
