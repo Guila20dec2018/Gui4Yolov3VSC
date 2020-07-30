@@ -111,7 +111,7 @@ public class DetectController {
     private final StringProperty weightsStringProperty = new SimpleStringProperty();
     private final StringProperty detectImgStringProperty = new SimpleStringProperty();
 
-    private boolean needCompilation;
+    private boolean needCompilation = true;
 
 
     private boolean lookingForFile(String fileName, String subDirectory) {
@@ -371,6 +371,7 @@ public class DetectController {
             Optional<ButtonType> result = alert.showAndWait();
             if (result.isPresent() && result.get() == ButtonType.OK) {
                 needCompilation = true;
+                //chenge value in selected cfg file
             }
             else {
                 gpuCheckBox.setSelected(false);
@@ -385,6 +386,7 @@ public class DetectController {
             Optional<ButtonType> result = alert.showAndWait();
             if (result.isPresent() && result.get() == ButtonType.OK) {
                 needCompilation = true;
+                //chenge value in selected cfg file
             }
             else {
                 opencvCheckBox.setSelected(false);
@@ -394,7 +396,26 @@ public class DetectController {
 
     @FXML
     void checkAndCompile(ActionEvent event) {
+        if (needCompilation) {
+            String s;
+            Process p;
+            try {
+                File dir = new File(directoryToDarknet.getAbsolutePath());
+                p = Runtime.getRuntime().exec("make", null, dir);
+                BufferedReader br = new BufferedReader(
+                    new InputStreamReader(p.getInputStream()));
+                while ((s = br.readLine()) != null) {
+                    System.out.println("line: " + s);
+                }
+                p.waitFor();
+                System.out.println ("exit: " + p.exitValue());
+                p.destroy();
+            } catch (Exception e) {
+                System.out.println(e.getStackTrace());
+                //e.printStackTrace();
+            }
 
+        }
     }
 
     @FXML
