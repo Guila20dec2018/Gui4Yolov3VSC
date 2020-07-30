@@ -440,7 +440,21 @@ public class DetectController {
 
     @FXML
     void changeStateCudnnCheckBox(ActionEvent event) {
-
+        if (cudnnCheckBox.isSelected()) {
+            Alert alert = new Alert(AlertType.CONFIRMATION, "Per questa opzione assicurati di aver installato correttamente CuDNN!");
+            Optional<ButtonType> result = alert.showAndWait();
+            if (result.isPresent() && result.get() == ButtonType.OK) {
+                needCompilation = true;
+                //change flag in Makefile
+                changeFlagInMakefile("CUDNN", 1);
+            }
+            else {
+                cudnnCheckBox.setSelected(false);
+            }
+        }
+        else {
+            changeFlagInMakefile("CUDNN", 0);
+        }
     }
 
     @FXML
