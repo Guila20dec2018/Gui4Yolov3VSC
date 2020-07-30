@@ -18,6 +18,7 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.CheckBox;
+import javafx.scene.control.Spinner;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Alert.AlertType;
@@ -88,6 +89,23 @@ public class SecondaryController {
 
     private File detectImgFile;
 
+    /**
+     * Gpu opencv and threshold fields
+     */
+    @FXML // fx:id="gpuCheckBox"
+    private CheckBox gpuCheckBox; // Value injected by FXMLLoader
+
+    @FXML // fx:id="opencvCheckBox"
+    private CheckBox opencvCheckBox; // Value injected by FXMLLoader
+
+    @FXML // fx:id="thresholdSpinner"
+    private Spinner<?> thresholdSpinner; // Value injected by FXMLLoader
+
+    @FXML // fx:id="compileButton"
+    private Button compileButton; // Value injected by FXMLLoader
+
+    @FXML // fx:id="detectButton"
+    private Button detectButton; // Value injected by FXMLLoader
 
     private final StringProperty cfgStringProperty = new SimpleStringProperty();
     private final StringProperty weightsStringProperty = new SimpleStringProperty();
@@ -343,6 +361,27 @@ public class SecondaryController {
         eagleImgCheckBox.setSelected(false);
     }
 
+
+    @FXML
+    void changeStateGpuCheckBox(ActionEvent event) {
+
+    }
+
+    @FXML
+    void changeStateOpencvCheckBox(ActionEvent event) {
+
+    }
+
+    @FXML
+    void checkAndCompile(ActionEvent event) {
+
+    }
+
+    @FXML
+    void runDetector(ActionEvent event) {
+
+    }
+
     @FXML // This method is called by the FXMLLoader when initialization is complete
     void initialize() {
         assert yolov3CfgCheckBox != null : "fx:id=\"yolov3CfgCheckBox\" was not injected: check your FXML file 'secondary.fxml'.";
@@ -359,6 +398,13 @@ public class SecondaryController {
         assert eagleImgCheckBox != null : "fx:id=\"eagleImgCheckBox\" was not injected: check your FXML file 'secondary.fxml'.";
         assert chooseDetectImgButton != null : "fx:id=\"chooseDetectImgButton\" was not injected: check your FXML file 'secondary.fxml'.";
         assert pathToDetectImgTextField != null : "fx:id=\"pathToDetectImgTextField\" was not injected: check your FXML file 'secondary.fxml'.";
+
+        assert gpuCheckBox != null : "fx:id=\"gpuCheckBox\" was not injected: check your FXML file 'secondary.fxml'.";
+        assert opencvCheckBox != null : "fx:id=\"opencvCheckBox\" was not injected: check your FXML file 'secondary.fxml'.";
+        assert thresholdSpinner != null : "fx:id=\"thresholdSpinner\" was not injected: check your FXML file 'secondary.fxml'.";
+        assert compileButton != null : "fx:id=\"compileButton\" was not injected: check your FXML file 'secondary.fxml'.";
+        assert detectButton != null : "fx:id=\"detectButton\" was not injected: check your FXML file 'secondary.fxml'.";
+
 
         directoryToDarknet = new File(App.getDarknetPath());
         pathToCfgFileTextField.textProperty().bindBidirectional(cfgStringProperty);
