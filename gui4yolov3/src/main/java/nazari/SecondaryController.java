@@ -90,7 +90,7 @@ public class SecondaryController {
 
 
     private final StringProperty cfgStringProperty = new SimpleStringProperty();
-    private final StringProperty weightsProperty = new SimpleStringProperty();
+    private final StringProperty weightsStringProperty = new SimpleStringProperty();
     private final StringProperty detectImgStringProperty = new SimpleStringProperty();
 
 
@@ -199,6 +199,14 @@ public class SecondaryController {
         }
 
     }
+    
+    private void getTextOnInputChangedCfgTextField() {
+        String typedFile = cfgStringProperty.get();
+        cfgFile = new File(typedFile);
+        System.out.println("Pointer to weigths file: " + cfgFile.getAbsolutePath());
+        yolov3CfgCheckBox.setSelected(false);
+        yolov3tinyCfgCheckBox.setSelected(false);
+    }
 
 
     @FXML
@@ -249,7 +257,7 @@ public class SecondaryController {
 
         if (selectedFile != null) {
             String selectedFilePath = selectedFile.getAbsolutePath();
-            weightsProperty.set(selectedFilePath);
+            weightsStringProperty.set(selectedFilePath);
             //pathToWeightsFileTextField.setText(selectedFilePath);
             weigthsFile = selectedFile;
             System.out.println("Pointer to weights file: " + weigthsFile.getAbsolutePath());
@@ -260,7 +268,7 @@ public class SecondaryController {
     }
     
     private void getTextOnInputChangedWeightsTextField() {
-        String typedFile = weightsProperty.get();
+        String typedFile = weightsStringProperty.get();
         weigthsFile = new File(typedFile);
         System.out.println("Pointer to weigths file: " + weigthsFile.getAbsolutePath());
         yolov3WeigthsCheckBox.setSelected(false);
@@ -354,8 +362,29 @@ public class SecondaryController {
 
         directoryToDarknet = new File(App.getDarknetPath());
         pathToCfgFileTextField.textProperty().bindBidirectional(cfgStringProperty);
-        pathToWeightsFileTextField.textProperty().bindBidirectional(weightsProperty);
+        pathToWeightsFileTextField.textProperty().bindBidirectional(weightsStringProperty);
         pathToDetectImgTextField.textProperty().bindBidirectional(detectImgStringProperty);
+
+        pathToCfgFileTextField.focusedProperty().addListener(new ChangeListener<Boolean>(){
+            @Override
+            public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+                // Auto-generated method stub
+                if (!newValue) {
+                    System.out.println("Focusing out from pathToWeightsFileTextfield!");
+                    if (cfgStringProperty.get() == null || cfgStringProperty.get().equalsIgnoreCase("")) {
+                        System.out.println("invalid path");
+                        cfgFile = null; //to cover the case the user erase the text in textField
+                    }
+                    else if (cfgFile != null && cfgFile.getAbsolutePath().equalsIgnoreCase(cfgStringProperty.get())) {
+                        System.out.println("Path do not change");
+                    }
+                    else {
+                        getTextOnInputChangedCfgTextField();
+                    }
+                }
+            }
+            
+        });
 
         pathToWeightsFileTextField.focusedProperty().addListener(new ChangeListener<Boolean>(){
             @Override
@@ -363,11 +392,11 @@ public class SecondaryController {
                 // Auto-generated method stub
                 if (!newValue) {
                     System.out.println("Focusing out from pathToWeightsFileTextfield!");
-                    if (weightsProperty.get() == null || weightsProperty.get().equalsIgnoreCase("")) {
+                    if (weightsStringProperty.get() == null || weightsStringProperty.get().equalsIgnoreCase("")) {
                         System.out.println("invalid path");
                         weigthsFile = null; //to cover the case the user erase the text in textField
                     }
-                    else if (weigthsFile != null && weigthsFile.getAbsolutePath().equalsIgnoreCase(weightsProperty.get())) {
+                    else if (weigthsFile != null && weigthsFile.getAbsolutePath().equalsIgnoreCase(weightsStringProperty.get())) {
                         System.out.println("Path do not change");
                     }
                     else {
