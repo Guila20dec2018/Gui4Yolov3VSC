@@ -180,6 +180,18 @@
                         <Insets left="5.0" right="5.0" />
                      </HBox.margin>
                   </TitledPane>
+                  <TitledPane animated="false" collapsible="false" prefHeight="200.0" prefWidth="200.0" text="CuDNN *">
+                     <content>
+                        <CheckBox fx:id="cudnnCheckBox" mnemonicParsing="false" onAction="#changeStateCudnnCheckBox" text="CUDNN=1">
+                           <padding>
+                              <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                           </padding>
+                        </CheckBox>
+                     </content>
+                     <HBox.margin>
+                        <Insets left="5.0" right="5.0" />
+                     </HBox.margin>
+                  </TitledPane>
                   <TitledPane animated="false" collapsible="false" prefHeight="200.0" prefWidth="200.0" text="Confidenza">
                      <content>
                         <Spinner fx:id="thresholdSpinner" editable="true" />

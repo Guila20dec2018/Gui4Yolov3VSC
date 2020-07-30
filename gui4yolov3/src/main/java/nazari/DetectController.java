@@ -100,6 +100,9 @@ public class DetectController {
     @FXML // fx:id="opencvCheckBox"
     private CheckBox opencvCheckBox; // Value injected by FXMLLoader
 
+    @FXML // fx:id="cudnnCheckBox"
+    private CheckBox cudnnCheckBox; // Value injected by FXMLLoader
+
     @FXML // fx:id="thresholdSpinner"
     private Spinner<?> thresholdSpinner; // Value injected by FXMLLoader
 
@@ -432,6 +435,25 @@ public class DetectController {
         }
         else {
             changeFlagInMakefile("OPENCV", 0);
+        }
+    }
+
+    @FXML
+    void changeStateCudnnCheckBox(ActionEvent event) {
+        if (cudnnCheckBox.isSelected()) {
+            Alert alert = new Alert(AlertType.CONFIRMATION, "Per questa opzione assicurati di aver installato correttamente CuDNN!");
+            Optional<ButtonType> result = alert.showAndWait();
+            if (result.isPresent() && result.get() == ButtonType.OK) {
+                needCompilation = true;
+                //change flag in Makefile
+                changeFlagInMakefile("CUDNN", 1);
+            }
+            else {
+                cudnnCheckBox.setSelected(false);
+            }
+        }
+        else {
+            changeFlagInMakefile("CUDNN", 0);
         }
     }
 
