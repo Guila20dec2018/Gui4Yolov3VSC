@@ -90,7 +90,7 @@ public class SecondaryController {
 
 
     private final StringProperty cfgStringProperty = new SimpleStringProperty();
-    private final StringProperty weightsProperty = new SimpleStringProperty();
+    private final StringProperty weightsStringProperty = new SimpleStringProperty();
     private final StringProperty detectImgStringProperty = new SimpleStringProperty();
 
 
@@ -199,6 +199,14 @@ public class SecondaryController {
         }
 
     }
+    
+    private void getTextOnInputChangedCfgTextField() {
+        String typedFile = cfgStringProperty.get();
+        cfgFile = new File(typedFile);
+        System.out.println("Pointer to weigths file: " + cfgFile.getAbsolutePath());
+        yolov3CfgCheckBox.setSelected(false);
+        yolov3tinyCfgCheckBox.setSelected(false);
+    }
 
 
     @FXML
@@ -249,7 +257,7 @@ public class SecondaryController {
 
         if (selectedFile != null) {
             String selectedFilePath = selectedFile.getAbsolutePath();
-            weightsProperty.set(selectedFilePath);
+            weightsStringProperty.set(selectedFilePath);
             //pathToWeightsFileTextField.setText(selectedFilePath);
             weigthsFile = selectedFile;
             System.out.println("Pointer to weights file: " + weigthsFile.getAbsolutePath());
@@ -259,6 +267,14 @@ public class SecondaryController {
         }
     }
     
+    private void getTextOnInputChangedWeightsTextField() {
+        String typedFile = weightsStringProperty.get();
+        weigthsFile = new File(typedFile);
+        System.out.println("Pointer to weigths file: " + weigthsFile.getAbsolutePath());
+        yolov3WeigthsCheckBox.setSelected(false);
+        darknetConv74CheckBox.setSelected(false);
+    }
+
 
     @FXML
     void changeStateDogImgCheckBox(ActionEvent event) {
@@ -318,12 +334,11 @@ public class SecondaryController {
         }
     }
 
-    private void getTextOnInputChangedTextField() {
+    private void getTextOnInputChangedImgTextField() {
         //System.out.println(detectImgStringProperty.get());
         String typedFile = detectImgStringProperty.get();
         detectImgFile = new File(typedFile);
         System.out.println("Pointer to detect image file: " + detectImgFile.getAbsolutePath());
-        //System.out.println(selectedFilePath);
         dogImgCheckBox.setSelected(false);
         eagleImgCheckBox.setSelected(false);
     }
@@ -347,21 +362,65 @@ public class SecondaryController {
 
         directoryToDarknet = new File(App.getDarknetPath());
         pathToCfgFileTextField.textProperty().bindBidirectional(cfgStringProperty);
-        pathToWeightsFileTextField.textProperty().bindBidirectional(weightsProperty);
+        pathToWeightsFileTextField.textProperty().bindBidirectional(weightsStringProperty);
         pathToDetectImgTextField.textProperty().bindBidirectional(detectImgStringProperty);
 
+        pathToCfgFileTextField.focusedProperty().addListener(new ChangeListener<Boolean>(){
+            @Override
+            public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+                // Auto-generated method stub
+                if (!newValue) {
+                    System.out.println("Focusing out from pathToWeightsFileTextfield!");
+                    if (cfgStringProperty.get() == null || cfgStringProperty.get().equalsIgnoreCase("")) {
+                        System.out.println("pathToCfgFileTextField invalid path");
+                        cfgFile = null; //to cover the case the user erase the text in textField
+                    }
+                    else if (cfgFile != null && cfgFile.getAbsolutePath().equalsIgnoreCase(cfgStringProperty.get())) {
+                        System.out.println("Path pathToCfgFileTextField do not change");
+                    }
+                    else {
+                        getTextOnInputChangedCfgTextField();
+                    }
+                }
+            }
+            
+        });
+
+        pathToWeightsFileTextField.focusedProperty().addListener(new ChangeListener<Boolean>(){
+            @Override
+            public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+                // Auto-generated method stub
+                if (!newValue) {
+                    System.out.println("Focusing out from pathToWeightsFileTextfield!");
+                    if (weightsStringProperty.get() == null || weightsStringProperty.get().equalsIgnoreCase("")) {
+                        System.out.println("pathToWeightsFileTextField invalid path");
+                        weigthsFile = null; //to cover the case the user erase the text in textField
+                    }
+                    else if (weigthsFile != null && weigthsFile.getAbsolutePath().equalsIgnoreCase(weightsStringProperty.get())) {
+                        System.out.println("Path pathToWeightsFileTextField do not change");
+                    }
+                    else {
+                        getTextOnInputChangedWeightsTextField();
+                    }
+                }
+            }
+            
+        });
 
         pathToDetectImgTextField.focusedProperty().addListener(new ChangeListener<Boolean>(){
             @Override
             public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
                 // Auto-generated method stub
                 if (!newValue) {
-                    System.out.println("Focusing out from textfield!");
+                    System.out.println("Focusing out from pathToDetectImgTextField!");
                     if (detectImgStringProperty.get() == null || detectImgStringProperty.get().equalsIgnoreCase("")) {
-                        System.out.println("invalid path");
+                        System.out.println("pathToDetectImgTextField invalid path");
+                    }
+                    else if (detectImgFile != null && detectImgFile.getAbsolutePath().equalsIgnoreCase(detectImgStringProperty.get())) {
+                        System.out.println("Path pathToDetectImgTextField do not change");
                     }
                     else {
-                        getTextOnInputChangedTextField();
+                        getTextOnInputChangedImgTextField();
                     }
                 }
             }
