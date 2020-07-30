@@ -259,6 +259,14 @@ public class SecondaryController {
         }
     }
     
+    private void getTextOnInputChangedWeightsTextField() {
+        String typedFile = weightsProperty.get();
+        weigthsFile = new File(typedFile);
+        System.out.println("Pointer to weigths file: " + weigthsFile.getAbsolutePath());
+        yolov3WeigthsCheckBox.setSelected(false);
+        darknetConv74CheckBox.setSelected(false);
+    }
+
 
     @FXML
     void changeStateDogImgCheckBox(ActionEvent event) {
@@ -318,12 +326,11 @@ public class SecondaryController {
         }
     }
 
-    private void getTextOnInputChangedTextField() {
+    private void getTextOnInputChangedImgTextField() {
         //System.out.println(detectImgStringProperty.get());
         String typedFile = detectImgStringProperty.get();
         detectImgFile = new File(typedFile);
         System.out.println("Pointer to detect image file: " + detectImgFile.getAbsolutePath());
-        //System.out.println(selectedFilePath);
         dogImgCheckBox.setSelected(false);
         eagleImgCheckBox.setSelected(false);
     }
@@ -350,6 +357,26 @@ public class SecondaryController {
         pathToWeightsFileTextField.textProperty().bindBidirectional(weightsProperty);
         pathToDetectImgTextField.textProperty().bindBidirectional(detectImgStringProperty);
 
+        pathToWeightsFileTextField.focusedProperty().addListener(new ChangeListener<Boolean>(){
+            @Override
+            public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+                // Auto-generated method stub
+                if (!newValue) {
+                    System.out.println("Focusing out from pathToWeightsFileTextfield!");
+                    if (weightsProperty.get() == null || weightsProperty.get().equalsIgnoreCase("")) {
+                        System.out.println("invalid path");
+                        weigthsFile = null; //to cover the case the user erase the text in textField
+                    }
+                    else if (weigthsFile != null && weigthsFile.getAbsolutePath().equalsIgnoreCase(weightsProperty.get())) {
+                        System.out.println("Path do not change");
+                    }
+                    else {
+                        getTextOnInputChangedWeightsTextField();
+                    }
+                }
+            }
+            
+        });
 
         pathToDetectImgTextField.focusedProperty().addListener(new ChangeListener<Boolean>(){
             @Override
@@ -361,7 +388,7 @@ public class SecondaryController {
                         System.out.println("invalid path");
                     }
                     else {
-                        getTextOnInputChangedTextField();
+                        getTextOnInputChangedImgTextField();
                     }
                 }
             }
