@@ -111,6 +111,8 @@ public class SecondaryController {
     private final StringProperty weightsStringProperty = new SimpleStringProperty();
     private final StringProperty detectImgStringProperty = new SimpleStringProperty();
 
+    private boolean needCompilation;
+
 
     private boolean lookingForFile(String fileName, String subDirectory) {
         boolean find = false;
@@ -364,12 +366,30 @@ public class SecondaryController {
 
     @FXML
     void changeStateGpuCheckBox(ActionEvent event) {
-
+        if (gpuCheckBox.isSelected()) {
+            Alert alert = new Alert(AlertType.CONFIRMATION, "Per questa opzione assicurati di aver installato correttamente i driver di nvidia e cuda toolkit!");
+            Optional<ButtonType> result = alert.showAndWait();
+            if (result.isPresent() && result.get() == ButtonType.OK) {
+                needCompilation = true;
+            }
+            else {
+                gpuCheckBox.setSelected(false);
+            }
+        }
     }
 
     @FXML
     void changeStateOpencvCheckBox(ActionEvent event) {
-
+        if (opencvCheckBox.isSelected()) {
+            Alert alert = new Alert(AlertType.CONFIRMATION, "Per questa opzione assicurati di aver installato correttamente OpenCV!");
+            Optional<ButtonType> result = alert.showAndWait();
+            if (result.isPresent() && result.get() == ButtonType.OK) {
+                needCompilation = true;
+            }
+            else {
+                opencvCheckBox.setSelected(false);
+            }
+        }
     }
 
     @FXML
