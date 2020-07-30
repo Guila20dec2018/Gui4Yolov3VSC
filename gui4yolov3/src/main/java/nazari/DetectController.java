@@ -2,6 +2,8 @@ package nazari;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
@@ -90,7 +92,7 @@ public class DetectController {
     private File detectImgFile;
 
     /**
-     * Gpu opencv and threshold fields
+     * Gpu opencv and threshold fields, threshold spinner and compile and run buttons
      */
     @FXML // fx:id="gpuCheckBox"
     private CheckBox gpuCheckBox; // Value injected by FXMLLoader
@@ -364,6 +366,37 @@ public class DetectController {
     }
 
 
+    private void changeFlagInMakefile(String flag, int value) {
+        try {
+            // input the (modified) file content to the StringBuffer "input"
+            BufferedReader file = new BufferedReader(new FileReader(directoryToDarknet.getAbsolutePath() + "/Makefile"));
+            StringBuffer inputBuffer = new StringBuffer();
+            String line;
+    
+            while ((line = file.readLine()) != null) {
+                //System.out.println(line);
+                //line = ... // replace the line here
+                if (line.equalsIgnoreCase(flag + "=" + Math.abs(value - 1))) {
+                    System.out.println("Found line");
+                    line = flag + "=" + value;
+                    System.out.println("Line after: " + line);
+                }
+                inputBuffer.append(line);
+                inputBuffer.append('\n');
+            }
+            file.close();
+    
+            // write the new string with the replaced line OVER the same file
+            FileOutputStream fileOut = new FileOutputStream(directoryToDarknet.getAbsolutePath() + "/Makefile");
+            fileOut.write(inputBuffer.toString().getBytes());
+            fileOut.close();
+    
+        } catch (Exception e) {
+            System.out.println("Problem reading Makefile.");
+            e.printStackTrace();
+        }
+    }
+    
     @FXML
     void changeStateGpuCheckBox(ActionEvent event) {
         if (gpuCheckBox.isSelected()) {
@@ -371,11 +404,15 @@ public class DetectController {
             Optional<ButtonType> result = alert.showAndWait();
             if (result.isPresent() && result.get() == ButtonType.OK) {
                 needCompilation = true;
-                //chenge value in selected cfg file
+                //change flag in Makefile
+                changeFlagInMakefile("GPU", 1);
             }
             else {
                 gpuCheckBox.setSelected(false);
             }
+        }
+        else {
+            changeFlagInMakefile("GPU", 0);
         }
     }
 
@@ -386,11 +423,15 @@ public class DetectController {
             Optional<ButtonType> result = alert.showAndWait();
             if (result.isPresent() && result.get() == ButtonType.OK) {
                 needCompilation = true;
-                //chenge value in selected cfg file
+                //change flag in Makefile
+                changeFlagInMakefile("OPENCV", 1);
             }
             else {
                 opencvCheckBox.setSelected(false);
             }
+        }
+        else {
+            changeFlagInMakefile("OPENCV", 0);
         }
     }
 
@@ -409,6 +450,7 @@ public class DetectController {
                 }
                 p.waitFor();
                 System.out.println ("exit: " + p.exitValue());
+
                 p.destroy();
             } catch (Exception e) {
                 System.out.println(e.getStackTrace());
