@@ -372,11 +372,11 @@ public class SecondaryController {
                 if (!newValue) {
                     System.out.println("Focusing out from pathToWeightsFileTextfield!");
                     if (cfgStringProperty.get() == null || cfgStringProperty.get().equalsIgnoreCase("")) {
-                        System.out.println("invalid path");
+                        System.out.println("pathToCfgFileTextField invalid path");
                         cfgFile = null; //to cover the case the user erase the text in textField
                     }
                     else if (cfgFile != null && cfgFile.getAbsolutePath().equalsIgnoreCase(cfgStringProperty.get())) {
-                        System.out.println("Path do not change");
+                        System.out.println("Path pathToCfgFileTextField do not change");
                     }
                     else {
                         getTextOnInputChangedCfgTextField();
@@ -393,11 +393,11 @@ public class SecondaryController {
                 if (!newValue) {
                     System.out.println("Focusing out from pathToWeightsFileTextfield!");
                     if (weightsStringProperty.get() == null || weightsStringProperty.get().equalsIgnoreCase("")) {
-                        System.out.println("invalid path");
+                        System.out.println("pathToWeightsFileTextField invalid path");
                         weigthsFile = null; //to cover the case the user erase the text in textField
                     }
                     else if (weigthsFile != null && weigthsFile.getAbsolutePath().equalsIgnoreCase(weightsStringProperty.get())) {
-                        System.out.println("Path do not change");
+                        System.out.println("Path pathToWeightsFileTextField do not change");
                     }
                     else {
                         getTextOnInputChangedWeightsTextField();
@@ -412,9 +412,12 @@ public class SecondaryController {
             public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
                 // Auto-generated method stub
                 if (!newValue) {
-                    System.out.println("Focusing out from textfield!");
+                    System.out.println("Focusing out from pathToDetectImgTextField!");
                     if (detectImgStringProperty.get() == null || detectImgStringProperty.get().equalsIgnoreCase("")) {
-                        System.out.println("invalid path");
+                        System.out.println("pathToDetectImgTextField invalid path");
+                    }
+                    else if (detectImgFile != null && detectImgFile.getAbsolutePath().equalsIgnoreCase(detectImgStringProperty.get())) {
+                        System.out.println("Path pathToDetectImgTextField do not change");
                     }
                     else {
                         getTextOnInputChangedImgTextField();
