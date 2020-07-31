@@ -151,6 +151,7 @@ public class DetectController {
                     // if find the file save the "pointer"
                     if (subDirectory.equalsIgnoreCase("cfg")) {
                         cfgFile = new File(dir.getAbsolutePath().concat("/" + fileName));
+                        cfgStringProperty.setValue(cfgFile.getAbsolutePath());
                         System.out.println("Pointer to cfg file: " + cfgFile.getAbsolutePath());
                     } else if (subDirectory.equalsIgnoreCase("")) {
                         weigthsFile = new File(dir.getAbsolutePath().concat("/" + fileName));
@@ -187,7 +188,7 @@ public class DetectController {
                 }
             } else {
                 yolov3tinyCfgCheckBox.setSelected(false);
-                pathToCfgFileTextField.setText("");
+                //pathToCfgFileTextField.setText("");
             }
         }
     }
@@ -206,7 +207,7 @@ public class DetectController {
                 }
             } else {
                 yolov3CfgCheckBox.setSelected(false);
-                pathToCfgFileTextField.setText("");
+                //pathToCfgFileTextField.setText("");
             }
         }
     }
@@ -240,11 +241,53 @@ public class DetectController {
     private void getTextOnInputChangedCfgTextField() {
         String typedFile = cfgStringProperty.get();
         cfgFile = new File(typedFile);
-        System.out.println("Pointer to weigths file: " + cfgFile.getAbsolutePath());
+        System.out.println("Pointer to cfg file: " + cfgFile.getAbsolutePath());
         yolov3CfgCheckBox.setSelected(false);
         yolov3tinyCfgCheckBox.setSelected(false);
     }
 
+    private void loadCfgParams() {
+        try {
+            // input the (modified) file content to the StringBuffer "input"
+            BufferedReader file = new BufferedReader(
+                    new FileReader(cfgStringProperty.getValue()));
+            //StringBuffer inputBuffer = new StringBuffer();
+            String line;
+
+            while ((line = file.readLine()) != null) {
+                String searchMe = line;
+                String findBatch = "batch=";
+                String findSubdivisions = "subdivisions=";
+                String findWidth = "width=";
+                String findHeight = "height=";
+                if (searchMe.regionMatches(0, findBatch, 0, findBatch.length())) {
+                    System.out.println("Found batch. " + searchMe);
+                    batchCfgTextField.setPromptText(searchMe.replaceAll("[^0-9]", ""));
+                }
+                else if (searchMe.regionMatches(0, findSubdivisions, 0, findSubdivisions.length())) {
+                    System.out.println("Found subdivisions. " + searchMe);
+                    subdivisionsCfgTextField.setPromptText(searchMe.replaceAll("[^0-9]", ""));
+                }
+                else if (searchMe.regionMatches(0, findWidth, 0, findWidth.length())) {
+                    System.out.println("Found width. " + searchMe);
+                    widthCfgTextField.setPromptText(searchMe.replaceAll("[^0-9]", ""));
+                }
+                else if (searchMe.regionMatches(0, findHeight, 0, findHeight.length())) {
+                    System.out.println("Found height. " + searchMe);
+                    heightCfgTextField.setPromptText(searchMe.replaceAll("[^0-9]", ""));
+                }
+                //if (!foundIt)
+                    //System.out.println("No match found.");
+            }
+            file.close();
+
+        } catch (Exception e) {
+            System.out.println("Problem reading cfg file.");
+            e.printStackTrace();
+        }
+    }
+
+    // weights methods
     @FXML
     void changeStateYolov3WeigthsCheckBox(ActionEvent event) {
         if (yolov3WeigthsCheckBox.isSelected()) {
@@ -650,6 +693,17 @@ public class DetectController {
         subdivisionsCfgTextField.textProperty().bindBidirectional(subdivisionsCfgStringProperty);
         widthCfgTextField.textProperty().bindBidirectional(widthCfgStringProperty);
         heightCfgTextField.textProperty().bindBidirectional(heightStringProperty);
+
+        cfgStringProperty.addListener(new ChangeListener<String>(){
+            @Override
+            public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+                // TODO Auto-generated method stub
+                System.out.println("Cfg file path changed from " + oldValue + " to " + newValue + " Load params...");
+                loadCfgParams();
+
+            }
+            
+        });
 
     }
 
