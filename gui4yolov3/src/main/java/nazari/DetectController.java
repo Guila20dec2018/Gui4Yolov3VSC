@@ -412,7 +412,6 @@ public class DetectController {
                 needCompilation = true;
                 //change flag in Makefile
                 changeFlagInMakefile("GPU", 1);
-                compileButton.requestFocus();
             }
             else {
                 gpuCheckBox.setSelected(false);
@@ -421,6 +420,7 @@ public class DetectController {
         else {
             changeFlagInMakefile("GPU", 0);
         }
+        compileButton.requestFocus();
     }
 
     @FXML
@@ -432,7 +432,6 @@ public class DetectController {
                 needCompilation = true;
                 //change flag in Makefile
                 changeFlagInMakefile("OPENCV", 1);
-                compileButton.requestFocus();
             }
             else {
                 opencvCheckBox.setSelected(false);
@@ -441,6 +440,7 @@ public class DetectController {
         else {
             changeFlagInMakefile("OPENCV", 0);
         }
+        compileButton.requestFocus();
     }
 
     @FXML
@@ -452,7 +452,6 @@ public class DetectController {
                 needCompilation = true;
                 //change flag in Makefile
                 changeFlagInMakefile("CUDNN", 1);
-                compileButton.requestFocus();
             }
             else {
                 cudnnCheckBox.setSelected(false);
@@ -461,12 +460,14 @@ public class DetectController {
         else {
             changeFlagInMakefile("CUDNN", 0);
         }
+        compileButton.requestFocus();
     }
 
     @FXML
     void checkAndCompile(ActionEvent event) {
         if (needCompilation) {
             String s;
+            String lastLine = "";
             Process p;
             try {
                 File dir = new File(directoryToDarknet.getAbsolutePath());
@@ -475,22 +476,72 @@ public class DetectController {
                     new InputStreamReader(p.getInputStream()));
                 while ((s = br.readLine()) != null) {
                     System.out.println("line: " + s);
+                    lastLine = s;
                 }
                 p.waitFor();
                 System.out.println ("exit: " + p.exitValue());
-
+                int processExitValue = p.exitValue();
                 p.destroy();
+                if (processExitValue == 0) {
+                    needCompilation = false;
+                }
+                else {
+                    Alert alert = new Alert(AlertType.ERROR, "Errore di compilazione: \n\n" + lastLine);
+                    Optional<ButtonType> result = alert.showAndWait();
+                    if (result.isPresent() && result.get() == ButtonType.OK) {
+                        //formatSystem();
+                    }
+                }
             } catch (Exception e) {
                 System.out.println(e.getStackTrace());
                 //e.printStackTrace();
             }
 
         }
+        else {
+            Alert alert = new Alert(AlertType.INFORMATION, "Compilazione non necessaria!");
+            Optional<ButtonType> result = alert.showAndWait();
+            if (result.isPresent() && result.get() == ButtonType.OK) {
+                //formatSystem();
+            }
+        }
     }
 
     @FXML
     void runDetector(ActionEvent event) {
+        if (!needCompilation) {
+            String s;
+            Process p;
+            try {
+                File dir = new File(directoryToDarknet.getAbsolutePath());
+                String detectCommand = "./darknet detect " + cfgFile.getAbsolutePath() + " " + 
+                    weigthsFile.getAbsolutePath() + " " + detectImgFile.getAbsolutePath() + " -thresh " + 
+                    thresholdSpinner.getValue();
+                System.out.println(detectCommand);
+                /*p = Runtime.getRuntime().exec(detectCommand, null, dir);
+                BufferedReader br = new BufferedReader(
+                    new InputStreamReader(p.getInputStream()));
+                while ((s = br.readLine()) != null) {
+                    System.out.println("line: " + s);
+                }
+                p.waitFor();
+                System.out.println ("exit: " + p.exitValue());
 
+                p.destroy();*/
+            } catch (Exception e) {
+                System.out.println(e.getStackTrace());
+                //e.printStackTrace();
+            }
+
+        }
+        else {
+            Alert alert = new Alert(AlertType.WARNING, "Compilazione necessaria!");
+            Optional<ButtonType> result = alert.showAndWait();
+            if (result.isPresent() && result.get() == ButtonType.OK) {
+                //formatSystem();
+                compileButton.requestFocus();
+            }
+        }
     }
 
     @FXML // This method is called by the FXMLLoader when initialization is complete
