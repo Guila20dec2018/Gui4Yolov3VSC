@@ -6,6 +6,7 @@
 <?import javafx.scene.control.CheckBox?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.Spinner?>
+<?import javafx.scene.control.SpinnerValueFactory.DoubleSpinnerValueFactory?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.TitledPane?>
 <?import javafx.scene.layout.AnchorPane?>
@@ -194,7 +195,11 @@
                   </TitledPane>
                   <TitledPane animated="false" collapsible="false" prefHeight="200.0" prefWidth="200.0" text="Confidenza">
                      <content>
-                        <Spinner fx:id="thresholdSpinner" editable="true" />
+                        <Spinner fx:id="thresholdSpinner" editable="true" prefHeight="26.0" prefWidth="120.0">
+                           <valueFactory>
+                              <SpinnerValueFactory.DoubleSpinnerValueFactory amountToStepBy="0.01" initialValue="0.25" max="1.0" min="0.0" />
+                          </valueFactory>
+                        </Spinner>
                      </content>
                      <HBox.margin>
                         <Insets left="5.0" right="5.0" />

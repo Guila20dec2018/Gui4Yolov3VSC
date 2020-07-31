@@ -384,6 +384,9 @@ public class DetectController {
                     line = flag + "=" + value;
                     System.out.println("Line after: " + line);
                 }
+                else if (line.equalsIgnoreCase(flag + "=" + value)) {
+                    System.out.println("Found line, flag already setted: " + line);
+                }
                 inputBuffer.append(line);
                 inputBuffer.append('\n');
             }
@@ -409,6 +412,7 @@ public class DetectController {
                 needCompilation = true;
                 //change flag in Makefile
                 changeFlagInMakefile("GPU", 1);
+                compileButton.requestFocus();
             }
             else {
                 gpuCheckBox.setSelected(false);
@@ -428,6 +432,7 @@ public class DetectController {
                 needCompilation = true;
                 //change flag in Makefile
                 changeFlagInMakefile("OPENCV", 1);
+                compileButton.requestFocus();
             }
             else {
                 opencvCheckBox.setSelected(false);
@@ -447,6 +452,7 @@ public class DetectController {
                 needCompilation = true;
                 //change flag in Makefile
                 changeFlagInMakefile("CUDNN", 1);
+                compileButton.requestFocus();
             }
             else {
                 cudnnCheckBox.setSelected(false);
@@ -577,6 +583,18 @@ public class DetectController {
             }
             
         });
+
+        //System.out.println(thresholdSpinner.getValue());
+        /*thresholdSpinner.focusedProperty().addListener(new ChangeListener<Boolean>(){
+            @Override
+            public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+                // Auto-generated method stub
+                if (!newValue) {
+                    System.out.println(thresholdSpinner.getValue());
+                }
+            }
+            
+        });*/
 
     }
 
