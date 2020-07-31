@@ -10,7 +10,10 @@
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.TitledPane?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 
 <VBox fx:id="detectVBox" prefHeight="607.0" prefWidth="960.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="nazari.DetectController">
@@ -20,44 +23,94 @@
             <Insets bottom="5.0" left="10.0" right="10.0" top="10.0" />
          </VBox.margin>
          <content>
-            <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0">
+            <GridPane>
+              <columnConstraints>
+                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                  <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                  <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+              </columnConstraints>
+              <rowConstraints>
+                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+              </rowConstraints>
                <children>
                   <CheckBox fx:id="yolov3CfgCheckBox" mnemonicParsing="false" onAction="#changeStateYolov3CfgCheckBox" text="cfg/yolov3.cfg">
-                     <HBox.margin>
+                     <padding>
                         <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
-                     </HBox.margin>
-                     <padding>
-                        <Insets bottom="10.0" left="5.0" right="5.0" top="10.0" />
                      </padding>
                   </CheckBox>
-                  <CheckBox fx:id="yolov3tinyCfgCheckBox" mnemonicParsing="false" onAction="#changeStateYolov3tinyCfgCheckBox" text="cfg/yolo3-tiny.cfg">
-                     <HBox.margin>
-                        <Insets bottom="10.0" left="10.0" right="20.0" top="10.0" />
-                     </HBox.margin>
+                  <CheckBox fx:id="yolov3tinyCfgCheckBox" mnemonicParsing="false" onAction="#changeStateYolov3tinyCfgCheckBox" text="cfg/yolo3-tiny.cfg" GridPane.columnIndex="1">
                      <padding>
-                        <Insets bottom="10.0" left="5.0" right="5.0" top="10.0" />
+                        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
                      </padding>
                   </CheckBox>
-                  <Label text="Carica file:">
-                     <HBox.margin>
-                        <Insets bottom="10.0" left="20.0" right="5.0" top="10.0" />
-                     </HBox.margin>
+                  <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" spacing="10.0" GridPane.columnIndex="2" GridPane.columnSpan="2">
+                     <children>
+                        <Label text="Carica file:">
+                           <HBox.margin>
+                              <Insets />
+                           </HBox.margin>
+                        </Label>
+                        <Button fx:id="chooseCfgFileButton" mnemonicParsing="false" onAction="#handleChooseCfgFileButtonClick" text="Browse">
+                           <HBox.margin>
+                              <Insets />
+                           </HBox.margin>
+                        </Button>
+                        <TextField fx:id="pathToCfgFileTextField" prefHeight="26.0" prefWidth="240.0" promptText="Cammino">
+                           <opaqueInsets>
+                              <Insets />
+                           </opaqueInsets>
+                           <HBox.margin>
+                              <Insets />
+                           </HBox.margin>
+                        </TextField>
+                     </children>
+                     <GridPane.margin>
+                        <Insets bottom="2.0" left="2.0" right="2.0" top="2.0" />
+                     </GridPane.margin>
                      <padding>
-                        <Insets bottom="10.0" left="5.0" right="5.0" top="10.0" />
+                        <Insets left="10.0" right="10.0" />
                      </padding>
-                  </Label>
-                  <Button fx:id="chooseCfgFileButton" mnemonicParsing="false" onAction="#handleChooseCfgFileButtonClick" text="Browse">
-                     <HBox.margin>
-                        <Insets bottom="10.0" left="5.0" right="10.0" top="10.0" />
-                     </HBox.margin>
-                  </Button>
-                  <TextField fx:id="pathToCfgFileTextField" prefHeight="26.0" prefWidth="240.0" promptText="Cammino">
-                     <HBox.margin>
-                        <Insets bottom="10.0" left="5.0" right="5.0" top="10.0" />
-                     </HBox.margin>
-                  </TextField>
+                  </HBox>
+                  <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" spacing="5.0" GridPane.rowIndex="1">
+                     <children>
+                        <Label text="Batch:" />
+                        <TextField fx:id="batchCfgTextField" prefHeight="26.0" prefWidth="60.0" promptText="1" />
+                     </children>
+                     <padding>
+                        <Insets left="10.0" right="10.0" />
+                     </padding>
+                  </HBox>
+                  <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" spacing="5.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                     <children>
+                        <Label text="Subdivisions:" />
+                        <TextField fx:id="subdivisionsCfgTextField" prefHeight="26.0" prefWidth="60.0" promptText="1" />
+                     </children>
+                     <padding>
+                        <Insets left="10.0" right="10.0" />
+                     </padding>
+                  </HBox>
+                  <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" spacing="5.0" GridPane.columnIndex="2" GridPane.rowIndex="1">
+                     <children>
+                        <Label text="Width:" />
+                        <TextField fx:id="widthCfgTextField" prefHeight="26.0" prefWidth="60.0" promptText="416" />
+                     </children>
+                     <padding>
+                        <Insets left="10.0" right="10.0" />
+                     </padding>
+                  </HBox>
+                  <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" spacing="5.0" GridPane.columnIndex="3" GridPane.rowIndex="1">
+                     <children>
+                        <Label text="Height:" />
+                        <TextField fx:id="heightCfgTextField" prefHeight="26.0" prefWidth="60.0" promptText="416" />
+                     </children>
+                     <padding>
+                        <Insets left="10.0" right="10.0" />
+                     </padding>
+                  </HBox>
                </children>
-            </HBox>
+            </GridPane>
          </content>
       </TitledPane>
       <TitledPane animated="false" collapsible="false" prefHeight="200.0" prefWidth="200.0" text="File di pesi">
