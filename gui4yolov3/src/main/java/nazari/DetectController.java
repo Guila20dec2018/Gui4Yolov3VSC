@@ -54,6 +54,18 @@ public class DetectController {
 
     @FXML // fx:id="pathToCfgFileTextField"
     private TextField pathToCfgFileTextField; // Value injected by FXMLLoader
+
+    @FXML // fx:id="batchCfgTextField"
+    private TextField batchCfgTextField; // Value injected by FXMLLoader
+
+    @FXML // fx:id="subdivisionsCfgTextField"
+    private TextField subdivisionsCfgTextField; // Value injected by FXMLLoader
+
+    @FXML // fx:id="widthCfgTextField"
+    private TextField widthCfgTextField; // Value injected by FXMLLoader
+
+    @FXML // fx:id="heightCfgTextField"
+    private TextField heightCfgTextField; // Value injected by FXMLLoader
     
     private File cfgFile;
 
