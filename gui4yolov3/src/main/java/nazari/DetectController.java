@@ -514,7 +514,11 @@ public class DetectController {
             Process p;
             try {
                 File dir = new File(directoryToDarknet.getAbsolutePath());
-                p = Runtime.getRuntime().exec("ls", null, dir);
+                String detectCommand = "./darknet detect " + cfgFile.getAbsolutePath() + " " + 
+                    weigthsFile.getAbsolutePath() + " " + detectImgFile.getAbsolutePath() + " -thresh " + 
+                    thresholdSpinner.getValue();
+                System.out.println(detectCommand);
+                /*p = Runtime.getRuntime().exec(detectCommand, null, dir);
                 BufferedReader br = new BufferedReader(
                     new InputStreamReader(p.getInputStream()));
                 while ((s = br.readLine()) != null) {
@@ -523,7 +527,7 @@ public class DetectController {
                 p.waitFor();
                 System.out.println ("exit: " + p.exitValue());
 
-                p.destroy();
+                p.destroy();*/
             } catch (Exception e) {
                 System.out.println(e.getStackTrace());
                 //e.printStackTrace();
@@ -531,7 +535,7 @@ public class DetectController {
 
         }
         else {
-            Alert alert = new Alert(AlertType.WARNING, "Are you sure you want to format your system?");
+            Alert alert = new Alert(AlertType.WARNING, "Compilazione necessaria!");
             Optional<ButtonType> result = alert.showAndWait();
             if (result.isPresent() && result.get() == ButtonType.OK) {
                 //formatSystem();
