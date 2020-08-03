@@ -196,6 +196,10 @@ public class DetectController {
                 }
             }
         }
+        else {
+            cfgFile = null;
+            cfgStringProperty.setValue("");
+        }
     }
 
     @FXML
@@ -217,6 +221,10 @@ public class DetectController {
                     loadCfgParams(); 
                 }
             }
+        }
+        else {
+            cfgFile = null;
+            cfgStringProperty.setValue("");
         }
     }
 
@@ -319,6 +327,10 @@ public class DetectController {
                 //pathToWeightsFileTextField.setText("");
             }
         }
+        else {
+            weigthsFile = null;
+            weightsStringProperty.setValue("");
+        }
     }
 
     @FXML
@@ -337,6 +349,10 @@ public class DetectController {
                 yolov3WeigthsCheckBox.setSelected(false);
                 //pathToWeightsFileTextField.setText("");
             }
+        }
+        else {
+            weigthsFile = null;
+            weightsStringProperty.setValue("");
         }
     }
 
@@ -385,6 +401,10 @@ public class DetectController {
                 //pathToDetectImgTextField.setText("");
             }
         }
+        else {
+            detectImgFile = null;
+            detectImgStringProperty.setValue("");
+        }
     }
 
     @FXML
@@ -403,6 +423,10 @@ public class DetectController {
                 dogImgCheckBox.setSelected(false);
                 //pathToDetectImgTextField.setText("");
             }
+        }
+        else {
+            detectImgFile = null;
+            detectImgStringProperty.setValue("");
         }
     }
 
@@ -435,6 +459,7 @@ public class DetectController {
         eagleImgCheckBox.setSelected(false);
     }
 
+    // gpu, opencv, cudnn, threshold
     private void changeFlagInMakefile(String flag, int value) {
         try {
             // input the (modified) file content to the StringBuffer "input"
@@ -479,13 +504,14 @@ public class DetectController {
                 needCompilation = true;
                 // change flag in Makefile
                 changeFlagInMakefile("GPU", 1);
+                compileButton.requestFocus();
             } else {
                 gpuCheckBox.setSelected(false);
             }
         } else {
             changeFlagInMakefile("GPU", 0);
+            compileButton.requestFocus();
         }
-        compileButton.requestFocus();
     }
 
     @FXML
@@ -498,13 +524,14 @@ public class DetectController {
                 needCompilation = true;
                 // change flag in Makefile
                 changeFlagInMakefile("OPENCV", 1);
+                compileButton.requestFocus();
             } else {
                 opencvCheckBox.setSelected(false);
             }
         } else {
             changeFlagInMakefile("OPENCV", 0);
+            compileButton.requestFocus();
         }
-        compileButton.requestFocus();
     }
 
     @FXML
@@ -517,13 +544,14 @@ public class DetectController {
                 needCompilation = true;
                 // change flag in Makefile
                 changeFlagInMakefile("CUDNN", 1);
+                compileButton.requestFocus();
             } else {
                 cudnnCheckBox.setSelected(false);
             }
         } else {
             changeFlagInMakefile("CUDNN", 0);
+            compileButton.requestFocus();
         }
-        compileButton.requestFocus();
     }
 
     @FXML
