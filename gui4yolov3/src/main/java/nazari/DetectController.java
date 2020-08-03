@@ -155,9 +155,11 @@ public class DetectController {
                         System.out.println("Pointer to cfg file: " + cfgFile.getAbsolutePath());
                     } else if (subDirectory.equalsIgnoreCase("")) {
                         weigthsFile = new File(dir.getAbsolutePath().concat("/" + fileName));
+                        weightsStringProperty.setValue(weigthsFile.getAbsolutePath());
                         System.out.println("Pointer to weights file: " + weigthsFile.getAbsolutePath());
                     } else if (subDirectory.equalsIgnoreCase("data")) {
                         detectImgFile = new File(dir.getAbsolutePath().concat("/" + fileName));
+                        detectImgStringProperty.setValue(detectImgFile.getAbsolutePath());
                         System.out.println("Pointer to detect image file: " + detectImgFile.getAbsolutePath());
                     }
                 }
@@ -189,6 +191,9 @@ public class DetectController {
             } else {
                 yolov3tinyCfgCheckBox.setSelected(false);
                 //pathToCfgFileTextField.setText("");
+                if (cfgStringProperty != null && !cfgStringProperty.getValue().equalsIgnoreCase("")) {
+                    loadCfgParams(); 
+                }
             }
         }
     }
@@ -208,6 +213,9 @@ public class DetectController {
             } else {
                 yolov3CfgCheckBox.setSelected(false);
                 //pathToCfgFileTextField.setText("");
+                if (cfgStringProperty != null && !cfgStringProperty.getValue().equalsIgnoreCase("")) {
+                    loadCfgParams(); 
+                }
             }
         }
     }
@@ -234,6 +242,9 @@ public class DetectController {
             // System.out.println(selectedFilePath);
             yolov3tinyCfgCheckBox.setSelected(false);
             yolov3CfgCheckBox.setSelected(false);
+            if (cfgStringProperty != null && !cfgStringProperty.getValue().equalsIgnoreCase("")) {
+                loadCfgParams(); 
+            }
         }
 
     }
@@ -244,6 +255,9 @@ public class DetectController {
         System.out.println("Pointer to cfg file: " + cfgFile.getAbsolutePath());
         yolov3CfgCheckBox.setSelected(false);
         yolov3tinyCfgCheckBox.setSelected(false);
+        if (cfgStringProperty != null && !cfgStringProperty.getValue().equalsIgnoreCase("")) {
+            loadCfgParams(); 
+        }
     }
 
     private void loadCfgParams() {
@@ -302,7 +316,7 @@ public class DetectController {
                 }
             } else {
                 darknetConv74CheckBox.setSelected(false);
-                pathToWeightsFileTextField.setText("");
+                //pathToWeightsFileTextField.setText("");
             }
         }
     }
@@ -321,7 +335,7 @@ public class DetectController {
                 }
             } else {
                 yolov3WeigthsCheckBox.setSelected(false);
-                pathToWeightsFileTextField.setText("");
+                //pathToWeightsFileTextField.setText("");
             }
         }
     }
@@ -368,7 +382,7 @@ public class DetectController {
                 }
             } else {
                 eagleImgCheckBox.setSelected(false);
-                pathToDetectImgTextField.setText("");
+                //pathToDetectImgTextField.setText("");
             }
         }
     }
@@ -387,7 +401,7 @@ public class DetectController {
                 }
             } else {
                 dogImgCheckBox.setSelected(false);
-                pathToDetectImgTextField.setText("");
+                //pathToDetectImgTextField.setText("");
             }
         }
     }
@@ -555,11 +569,11 @@ public class DetectController {
 
     @FXML
     void runDetector(ActionEvent event) {
+        // check if al files was selected
         // before write down in the cfg file the params batch subdivisions width height
         if (batchCfStringProperty.getValue() == null || batchCfStringProperty.getValue().equalsIgnoreCase("")) {
             System.out.println("bacth didnt change");
         }
-        // check if al files was selected
         if (!needCompilation) {
             String s;
             Process p;
@@ -628,7 +642,10 @@ public class DetectController {
                     System.out.println("Focusing out from pathToWeightsFileTextfield!");
                     if (cfgStringProperty.get() == null || cfgStringProperty.get().equalsIgnoreCase("")) {
                         System.out.println("pathToCfgFileTextField invalid path");
+                        yolov3CfgCheckBox.setSelected(false);
+                        yolov3tinyCfgCheckBox.setSelected(false);
                         cfgFile = null; // to cover the case the user erase the text in textField
+                        //erase params values
                     } else if (cfgFile != null && cfgFile.getAbsolutePath().equalsIgnoreCase(cfgStringProperty.get())) {
                         System.out.println("Path pathToCfgFileTextField do not change");
                     } else {
@@ -647,6 +664,8 @@ public class DetectController {
                     System.out.println("Focusing out from pathToWeightsFileTextfield!");
                     if (weightsStringProperty.get() == null || weightsStringProperty.get().equalsIgnoreCase("")) {
                         System.out.println("pathToWeightsFileTextField invalid path");
+                        yolov3WeigthsCheckBox.setSelected(false);
+                        darknetConv74CheckBox.setSelected(false);
                         weigthsFile = null; // to cover the case the user erase the text in textField
                     } else if (weigthsFile != null
                             && weigthsFile.getAbsolutePath().equalsIgnoreCase(weightsStringProperty.get())) {
@@ -667,6 +686,9 @@ public class DetectController {
                     System.out.println("Focusing out from pathToDetectImgTextField!");
                     if (detectImgStringProperty.get() == null || detectImgStringProperty.get().equalsIgnoreCase("")) {
                         System.out.println("pathToDetectImgTextField invalid path");
+                        dogImgCheckBox.setSelected(false);
+                        eagleImgCheckBox.setSelected(false);
+                        detectImgFile = null;// to cover the case the user erase the text in textField
                     } else if (detectImgFile != null
                             && detectImgFile.getAbsolutePath().equalsIgnoreCase(detectImgStringProperty.get())) {
                         System.out.println("Path pathToDetectImgTextField do not change");
@@ -693,17 +715,6 @@ public class DetectController {
         subdivisionsCfgTextField.textProperty().bindBidirectional(subdivisionsCfgStringProperty);
         widthCfgTextField.textProperty().bindBidirectional(widthCfgStringProperty);
         heightCfgTextField.textProperty().bindBidirectional(heightStringProperty);
-
-        cfgStringProperty.addListener(new ChangeListener<String>(){
-            @Override
-            public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
-                // TODO Auto-generated method stub
-                System.out.println("Cfg file path changed from " + oldValue + " to " + newValue + " Load params...");
-                loadCfgParams();
-
-            }
-            
-        });
 
     }
 
