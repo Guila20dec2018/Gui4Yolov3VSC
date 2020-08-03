@@ -623,13 +623,35 @@ public class DetectController {
         return true;
     }
 
+    private boolean cfgParamsChanged() {
+        if (batchCfStringProperty.getValue() != null && !batchCfStringProperty.getValue().equalsIgnoreCase("")) {
+            System.out.println("bacth changed");
+            return true;
+        }
+        if (subdivisionsCfgStringProperty.getValue() != null && !subdivisionsCfgStringProperty.getValue().equalsIgnoreCase("")) {
+            return true;
+        }
+        if (widthCfgStringProperty.getValue() != null && !widthCfgStringProperty.getValue().equalsIgnoreCase("")) {
+            return true;
+        }
+        if (heightStringProperty.getValue() != null && !heightStringProperty.getValue().equalsIgnoreCase("")) {
+            return true;
+        }
+        return false;
+    }
+
+    private void writeCfgFile() {
+        System.out.println("Params changed");
+    }
+
     @FXML
     void runDetector(ActionEvent event) {
         // before write down in the cfg file the params batch subdivisions width height check if was changes
-        if (batchCfStringProperty.getValue() == null || batchCfStringProperty.getValue().equalsIgnoreCase("")) {
-            System.out.println("bacth didnt change");
-        }
+        
         if (!needCompilation && checkFilesSelection()) {
+            if (cfgParamsChanged()) {
+                writeCfgFile();
+            }
             String s;
             Process p;
             try {
