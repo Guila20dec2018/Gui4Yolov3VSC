@@ -640,6 +640,11 @@ public class DetectController {
         assert yolov3tinyCfgCheckBox != null : "fx:id=\"yolo3tinyCfgCheckBox\" was not injected: check your FXML file 'secondary.fxml'.";
         assert chooseCfgFileButton != null : "fx:id=\"chooseCfgFileButton\" was not injected: check your FXML file 'secondary.fxml'.";
         assert pathToCfgFileTextField != null : "fx:id=\"pathToCfgFileTextField\" was not injected: check your FXML file 'secondary.fxml'.";
+        assert batchCfgTextField != null : "fx:id=\"batchCfgTextField\" was not injected: check your FXML file 'detect.fxml'.";
+        assert subdivisionsCfgTextField != null : "fx:id=\"subdivisionsCfgTextField\" was not injected: check your FXML file 'detect.fxml'.";
+        assert widthCfgTextField != null : "fx:id=\"widthCfgTextField\" was not injected: check your FXML file 'detect.fxml'.";
+        assert heightCfgTextField != null : "fx:id=\"heightCfgTextField\" was not injected: check your FXML file 'detect.fxml'.";
+
 
         assert yolov3WeigthsCheckBox != null : "fx:id=\"yolov3WeigthsCheckBox\" was not injected: check your FXML file 'secondary.fxml'.";
         assert darknetConv74CheckBox != null : "fx:id=\"darknetConv74CheckBox\" was not injected: check your FXML file 'secondary.fxml'.";
