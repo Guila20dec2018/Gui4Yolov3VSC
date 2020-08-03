@@ -595,14 +595,41 @@ public class DetectController {
         }
     }
 
+    private boolean checkFilesSelection() {
+        if (cfgFile == null) {
+            Alert alert = new Alert(AlertType.WARNING, "Per avviare e' necessario scegliere un file di configurazione.");
+            Optional<ButtonType> result = alert.showAndWait();
+            if (result.isPresent() && result.get() == ButtonType.OK) {
+                pathToCfgFileTextField.requestFocus();
+                return false;
+            }
+        }
+        if (weigthsFile == null) {
+            Alert alert = new Alert(AlertType.WARNING, "Per avviare e' necessario scegliere un file di pesi.");
+            Optional<ButtonType> result = alert.showAndWait();
+            if (result.isPresent() && result.get() == ButtonType.OK) {
+                pathToWeightsFileTextField.requestFocus();
+                return false;
+            }
+        }
+        if (detectImgFile == null) {
+            Alert alert = new Alert(AlertType.WARNING, "Per avviare e' necessario scegliere una immagine per essere analizzata.");
+            Optional<ButtonType> result = alert.showAndWait();
+            if (result.isPresent() && result.get() == ButtonType.OK) {
+                pathToDetectImgTextField.requestFocus();
+                return false;
+            }
+        }
+        return true;
+    }
+
     @FXML
     void runDetector(ActionEvent event) {
-        // check if al files was selected
-        // before write down in the cfg file the params batch subdivisions width height
+        // before write down in the cfg file the params batch subdivisions width height check if was changes
         if (batchCfStringProperty.getValue() == null || batchCfStringProperty.getValue().equalsIgnoreCase("")) {
             System.out.println("bacth didnt change");
         }
-        if (!needCompilation) {
+        if (!needCompilation && checkFilesSelection()) {
             String s;
             Process p;
             try {
@@ -624,7 +651,8 @@ public class DetectController {
                 // e.printStackTrace();
             }
 
-        } else {
+        }
+        else if (needCompilation) {
             Alert alert = new Alert(AlertType.WARNING, "Compilazione necessaria!");
             Optional<ButtonType> result = alert.showAndWait();
             if (result.isPresent() && result.get() == ButtonType.OK) {
