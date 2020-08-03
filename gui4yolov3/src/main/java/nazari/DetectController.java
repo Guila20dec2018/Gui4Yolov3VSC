@@ -155,9 +155,11 @@ public class DetectController {
                         System.out.println("Pointer to cfg file: " + cfgFile.getAbsolutePath());
                     } else if (subDirectory.equalsIgnoreCase("")) {
                         weigthsFile = new File(dir.getAbsolutePath().concat("/" + fileName));
+                        weightsStringProperty.setValue(weigthsFile.getAbsolutePath());
                         System.out.println("Pointer to weights file: " + weigthsFile.getAbsolutePath());
                     } else if (subDirectory.equalsIgnoreCase("data")) {
                         detectImgFile = new File(dir.getAbsolutePath().concat("/" + fileName));
+                        detectImgStringProperty.setValue(detectImgFile.getAbsolutePath());
                         System.out.println("Pointer to detect image file: " + detectImgFile.getAbsolutePath());
                     }
                 }
@@ -189,7 +191,14 @@ public class DetectController {
             } else {
                 yolov3tinyCfgCheckBox.setSelected(false);
                 //pathToCfgFileTextField.setText("");
+                if (cfgStringProperty != null && !cfgStringProperty.getValue().equalsIgnoreCase("")) {
+                    loadCfgParams(); 
+                }
             }
+        }
+        else {
+            cfgFile = null;
+            cfgStringProperty.setValue("");
         }
     }
 
@@ -208,7 +217,14 @@ public class DetectController {
             } else {
                 yolov3CfgCheckBox.setSelected(false);
                 //pathToCfgFileTextField.setText("");
+                if (cfgStringProperty != null && !cfgStringProperty.getValue().equalsIgnoreCase("")) {
+                    loadCfgParams(); 
+                }
             }
+        }
+        else {
+            cfgFile = null;
+            cfgStringProperty.setValue("");
         }
     }
 
@@ -234,6 +250,9 @@ public class DetectController {
             // System.out.println(selectedFilePath);
             yolov3tinyCfgCheckBox.setSelected(false);
             yolov3CfgCheckBox.setSelected(false);
+            if (cfgStringProperty != null && !cfgStringProperty.getValue().equalsIgnoreCase("")) {
+                loadCfgParams(); 
+            }
         }
 
     }
@@ -244,6 +263,9 @@ public class DetectController {
         System.out.println("Pointer to cfg file: " + cfgFile.getAbsolutePath());
         yolov3CfgCheckBox.setSelected(false);
         yolov3tinyCfgCheckBox.setSelected(false);
+        if (cfgStringProperty != null && !cfgStringProperty.getValue().equalsIgnoreCase("")) {
+            loadCfgParams(); 
+        }
     }
 
     private void loadCfgParams() {
@@ -302,8 +324,12 @@ public class DetectController {
                 }
             } else {
                 darknetConv74CheckBox.setSelected(false);
-                pathToWeightsFileTextField.setText("");
+                //pathToWeightsFileTextField.setText("");
             }
+        }
+        else {
+            weigthsFile = null;
+            weightsStringProperty.setValue("");
         }
     }
 
@@ -321,8 +347,12 @@ public class DetectController {
                 }
             } else {
                 yolov3WeigthsCheckBox.setSelected(false);
-                pathToWeightsFileTextField.setText("");
+                //pathToWeightsFileTextField.setText("");
             }
+        }
+        else {
+            weigthsFile = null;
+            weightsStringProperty.setValue("");
         }
     }
 
@@ -368,8 +398,12 @@ public class DetectController {
                 }
             } else {
                 eagleImgCheckBox.setSelected(false);
-                pathToDetectImgTextField.setText("");
+                //pathToDetectImgTextField.setText("");
             }
+        }
+        else {
+            detectImgFile = null;
+            detectImgStringProperty.setValue("");
         }
     }
 
@@ -387,8 +421,12 @@ public class DetectController {
                 }
             } else {
                 dogImgCheckBox.setSelected(false);
-                pathToDetectImgTextField.setText("");
+                //pathToDetectImgTextField.setText("");
             }
+        }
+        else {
+            detectImgFile = null;
+            detectImgStringProperty.setValue("");
         }
     }
 
@@ -421,6 +459,7 @@ public class DetectController {
         eagleImgCheckBox.setSelected(false);
     }
 
+    // gpu, opencv, cudnn, threshold
     private void changeFlagInMakefile(String flag, int value) {
         try {
             // input the (modified) file content to the StringBuffer "input"
@@ -465,13 +504,14 @@ public class DetectController {
                 needCompilation = true;
                 // change flag in Makefile
                 changeFlagInMakefile("GPU", 1);
+                compileButton.requestFocus();
             } else {
                 gpuCheckBox.setSelected(false);
             }
         } else {
             changeFlagInMakefile("GPU", 0);
+            compileButton.requestFocus();
         }
-        compileButton.requestFocus();
     }
 
     @FXML
@@ -484,13 +524,14 @@ public class DetectController {
                 needCompilation = true;
                 // change flag in Makefile
                 changeFlagInMakefile("OPENCV", 1);
+                compileButton.requestFocus();
             } else {
                 opencvCheckBox.setSelected(false);
             }
         } else {
             changeFlagInMakefile("OPENCV", 0);
+            compileButton.requestFocus();
         }
-        compileButton.requestFocus();
     }
 
     @FXML
@@ -503,13 +544,14 @@ public class DetectController {
                 needCompilation = true;
                 // change flag in Makefile
                 changeFlagInMakefile("CUDNN", 1);
+                compileButton.requestFocus();
             } else {
                 cudnnCheckBox.setSelected(false);
             }
         } else {
             changeFlagInMakefile("CUDNN", 0);
+            compileButton.requestFocus();
         }
-        compileButton.requestFocus();
     }
 
     @FXML
@@ -555,11 +597,11 @@ public class DetectController {
 
     @FXML
     void runDetector(ActionEvent event) {
+        // check if al files was selected
         // before write down in the cfg file the params batch subdivisions width height
         if (batchCfStringProperty.getValue() == null || batchCfStringProperty.getValue().equalsIgnoreCase("")) {
             System.out.println("bacth didnt change");
         }
-        // check if al files was selected
         if (!needCompilation) {
             String s;
             Process p;
@@ -598,6 +640,11 @@ public class DetectController {
         assert yolov3tinyCfgCheckBox != null : "fx:id=\"yolo3tinyCfgCheckBox\" was not injected: check your FXML file 'secondary.fxml'.";
         assert chooseCfgFileButton != null : "fx:id=\"chooseCfgFileButton\" was not injected: check your FXML file 'secondary.fxml'.";
         assert pathToCfgFileTextField != null : "fx:id=\"pathToCfgFileTextField\" was not injected: check your FXML file 'secondary.fxml'.";
+        assert batchCfgTextField != null : "fx:id=\"batchCfgTextField\" was not injected: check your FXML file 'detect.fxml'.";
+        assert subdivisionsCfgTextField != null : "fx:id=\"subdivisionsCfgTextField\" was not injected: check your FXML file 'detect.fxml'.";
+        assert widthCfgTextField != null : "fx:id=\"widthCfgTextField\" was not injected: check your FXML file 'detect.fxml'.";
+        assert heightCfgTextField != null : "fx:id=\"heightCfgTextField\" was not injected: check your FXML file 'detect.fxml'.";
+
 
         assert yolov3WeigthsCheckBox != null : "fx:id=\"yolov3WeigthsCheckBox\" was not injected: check your FXML file 'secondary.fxml'.";
         assert darknetConv74CheckBox != null : "fx:id=\"darknetConv74CheckBox\" was not injected: check your FXML file 'secondary.fxml'.";
@@ -628,7 +675,10 @@ public class DetectController {
                     System.out.println("Focusing out from pathToWeightsFileTextfield!");
                     if (cfgStringProperty.get() == null || cfgStringProperty.get().equalsIgnoreCase("")) {
                         System.out.println("pathToCfgFileTextField invalid path");
+                        yolov3CfgCheckBox.setSelected(false);
+                        yolov3tinyCfgCheckBox.setSelected(false);
                         cfgFile = null; // to cover the case the user erase the text in textField
+                        //erase params values
                     } else if (cfgFile != null && cfgFile.getAbsolutePath().equalsIgnoreCase(cfgStringProperty.get())) {
                         System.out.println("Path pathToCfgFileTextField do not change");
                     } else {
@@ -647,6 +697,8 @@ public class DetectController {
                     System.out.println("Focusing out from pathToWeightsFileTextfield!");
                     if (weightsStringProperty.get() == null || weightsStringProperty.get().equalsIgnoreCase("")) {
                         System.out.println("pathToWeightsFileTextField invalid path");
+                        yolov3WeigthsCheckBox.setSelected(false);
+                        darknetConv74CheckBox.setSelected(false);
                         weigthsFile = null; // to cover the case the user erase the text in textField
                     } else if (weigthsFile != null
                             && weigthsFile.getAbsolutePath().equalsIgnoreCase(weightsStringProperty.get())) {
@@ -667,6 +719,9 @@ public class DetectController {
                     System.out.println("Focusing out from pathToDetectImgTextField!");
                     if (detectImgStringProperty.get() == null || detectImgStringProperty.get().equalsIgnoreCase("")) {
                         System.out.println("pathToDetectImgTextField invalid path");
+                        dogImgCheckBox.setSelected(false);
+                        eagleImgCheckBox.setSelected(false);
+                        detectImgFile = null;// to cover the case the user erase the text in textField
                     } else if (detectImgFile != null
                             && detectImgFile.getAbsolutePath().equalsIgnoreCase(detectImgStringProperty.get())) {
                         System.out.println("Path pathToDetectImgTextField do not change");
@@ -694,13 +749,88 @@ public class DetectController {
         widthCfgTextField.textProperty().bindBidirectional(widthCfgStringProperty);
         heightCfgTextField.textProperty().bindBidirectional(heightStringProperty);
 
-        cfgStringProperty.addListener(new ChangeListener<String>(){
+        //check the value of the textFilds, only numeric permitted
+        batchCfgTextField.focusedProperty().addListener(new ChangeListener<Boolean>(){
             @Override
-            public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
-                // TODO Auto-generated method stub
-                System.out.println("Cfg file path changed from " + oldValue + " to " + newValue + " Load params...");
-                loadCfgParams();
-
+            public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+                // Auto-generated method stub
+                if (!newValue && (batchCfStringProperty.getValue() != null && 
+                        !batchCfStringProperty.getValue().equalsIgnoreCase(""))) {
+                    try {
+                        Integer.parseInt(batchCfStringProperty.getValue());
+                    } catch (Exception e) {
+                        System.out.println("Exception in batch textFild " + e.getMessage());
+                        Alert alert = new Alert(AlertType.ERROR, "Il valore di batch deve essere numerico!");
+                        Optional<ButtonType> result = alert.showAndWait();
+                        if (result.isPresent() && result.get() == ButtonType.OK) {
+                            //formatSystem();
+                        }
+                        batchCfgTextField.requestFocus();
+                    }
+                }
+            }
+            
+        });
+        subdivisionsCfgTextField.focusedProperty().addListener(new ChangeListener<Boolean>(){
+            @Override
+            public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+                // Auto-generated method stub
+                if (!newValue && (subdivisionsCfgStringProperty.getValue() != null && 
+                        !subdivisionsCfgStringProperty.getValue().equalsIgnoreCase(""))) {
+                    try {
+                        Integer.parseInt(subdivisionsCfgStringProperty.getValue());
+                    } catch (Exception e) {
+                        System.out.println("Exception in subdivisions textFild " + e.getMessage());
+                        Alert alert = new Alert(AlertType.ERROR, "Il valore di subdivisions deve essere numerico!");
+                        Optional<ButtonType> result = alert.showAndWait();
+                        if (result.isPresent() && result.get() == ButtonType.OK) {
+                            //formatSystem();
+                        }
+                        subdivisionsCfgTextField.requestFocus();
+                    }
+                }
+            }
+            
+        });
+        widthCfgTextField.focusedProperty().addListener(new ChangeListener<Boolean>(){
+            @Override
+            public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+                // Auto-generated method stub
+                if (!newValue && (widthCfgStringProperty.getValue() != null && 
+                        !widthCfgStringProperty.getValue().equalsIgnoreCase(""))) {
+                    try {
+                        Integer.parseInt(widthCfgStringProperty.getValue());
+                    } catch (Exception e) {
+                        System.out.println("Exception in width textFild " + e.getMessage());
+                        Alert alert = new Alert(AlertType.ERROR, "Il valore di width deve essere numerico!");
+                        Optional<ButtonType> result = alert.showAndWait();
+                        if (result.isPresent() && result.get() == ButtonType.OK) {
+                            //formatSystem();
+                        }
+                        widthCfgTextField.requestFocus();
+                    }
+                }
+            }
+            
+        });
+        heightCfgTextField.focusedProperty().addListener(new ChangeListener<Boolean>(){
+            @Override
+            public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+                // Auto-generated method stub
+                if (!newValue && (heightStringProperty.getValue() != null && 
+                        !heightStringProperty.getValue().equalsIgnoreCase(""))) {
+                    try {
+                        Integer.parseInt(heightStringProperty.getValue());
+                    } catch (Exception e) {
+                        System.out.println("Exception in height textFild " + e.getMessage());
+                        Alert alert = new Alert(AlertType.ERROR, "Il valore di heigth deve essere numerico!");
+                        Optional<ButtonType> result = alert.showAndWait();
+                        if (result.isPresent() && result.get() == ButtonType.OK) {
+                            //formatSystem();
+                        }
+                        heightCfgTextField.requestFocus();
+                    }
+                }
             }
             
         });
