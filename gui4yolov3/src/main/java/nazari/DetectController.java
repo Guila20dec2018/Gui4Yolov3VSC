@@ -744,6 +744,92 @@ public class DetectController {
         widthCfgTextField.textProperty().bindBidirectional(widthCfgStringProperty);
         heightCfgTextField.textProperty().bindBidirectional(heightStringProperty);
 
+        //check the value of the textFilds, only numeric permitted
+        batchCfgTextField.focusedProperty().addListener(new ChangeListener<Boolean>(){
+            @Override
+            public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+                // Auto-generated method stub
+                if (!newValue && (batchCfStringProperty.getValue() != null && 
+                        !batchCfStringProperty.getValue().equalsIgnoreCase(""))) {
+                    try {
+                        Integer.parseInt(batchCfStringProperty.getValue());
+                    } catch (Exception e) {
+                        System.out.println("Exception in batch textFild " + e.getMessage());
+                        Alert alert = new Alert(AlertType.ERROR, "Il valore di batch deve essere numerico!");
+                        Optional<ButtonType> result = alert.showAndWait();
+                        if (result.isPresent() && result.get() == ButtonType.OK) {
+                            //formatSystem();
+                        }
+                        batchCfgTextField.requestFocus();
+                    }
+                }
+            }
+            
+        });
+        subdivisionsCfgTextField.focusedProperty().addListener(new ChangeListener<Boolean>(){
+            @Override
+            public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+                // Auto-generated method stub
+                if (!newValue && (subdivisionsCfgStringProperty.getValue() != null && 
+                        !subdivisionsCfgStringProperty.getValue().equalsIgnoreCase(""))) {
+                    try {
+                        Integer.parseInt(subdivisionsCfgStringProperty.getValue());
+                    } catch (Exception e) {
+                        System.out.println("Exception in subdivisions textFild " + e.getMessage());
+                        Alert alert = new Alert(AlertType.ERROR, "Il valore di subdivisions deve essere numerico!");
+                        Optional<ButtonType> result = alert.showAndWait();
+                        if (result.isPresent() && result.get() == ButtonType.OK) {
+                            //formatSystem();
+                        }
+                        subdivisionsCfgTextField.requestFocus();
+                    }
+                }
+            }
+            
+        });
+        widthCfgTextField.focusedProperty().addListener(new ChangeListener<Boolean>(){
+            @Override
+            public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+                // Auto-generated method stub
+                if (!newValue && (widthCfgStringProperty.getValue() != null && 
+                        !widthCfgStringProperty.getValue().equalsIgnoreCase(""))) {
+                    try {
+                        Integer.parseInt(widthCfgStringProperty.getValue());
+                    } catch (Exception e) {
+                        System.out.println("Exception in width textFild " + e.getMessage());
+                        Alert alert = new Alert(AlertType.ERROR, "Il valore di width deve essere numerico!");
+                        Optional<ButtonType> result = alert.showAndWait();
+                        if (result.isPresent() && result.get() == ButtonType.OK) {
+                            //formatSystem();
+                        }
+                        widthCfgTextField.requestFocus();
+                    }
+                }
+            }
+            
+        });
+        heightCfgTextField.focusedProperty().addListener(new ChangeListener<Boolean>(){
+            @Override
+            public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+                // Auto-generated method stub
+                if (!newValue && (heightStringProperty.getValue() != null && 
+                        !heightStringProperty.getValue().equalsIgnoreCase(""))) {
+                    try {
+                        Integer.parseInt(heightStringProperty.getValue());
+                    } catch (Exception e) {
+                        System.out.println("Exception in height textFild " + e.getMessage());
+                        Alert alert = new Alert(AlertType.ERROR, "Il valore di heigth deve essere numerico!");
+                        Optional<ButtonType> result = alert.showAndWait();
+                        if (result.isPresent() && result.get() == ButtonType.OK) {
+                            //formatSystem();
+                        }
+                        heightCfgTextField.requestFocus();
+                    }
+                }
+            }
+            
+        });
+
     }
 
     @FXML
