@@ -5,8 +5,15 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.PrintWriter;
+import java.lang.ProcessBuilder.Redirect;
 import java.net.URL;
+import java.nio.charset.CoderMalfunctionError;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
@@ -14,16 +21,24 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.CheckBox;
+import javafx.scene.control.Dialog;
+import javafx.scene.control.Label;
+import javafx.scene.control.ProgressBar;
 import javafx.scene.control.Spinner;
+import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.ButtonBar.ButtonData;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.Text;
+import javafx.scene.text.TextFlow;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
@@ -113,11 +128,11 @@ public class DetectController {
     @FXML // fx:id="opencvCheckBox"
     private CheckBox opencvCheckBox; // Value injected by FXMLLoader
 
-    @FXML // fx:id="cudnnCheckBox"
+    @FXML // fx:id="cudnnCheckBox"sw
     private CheckBox cudnnCheckBox; // Value injected by FXMLLoader
 
     @FXML // fx:id="thresholdSpinner"
-    private Spinner<?> thresholdSpinner; // Value injected by FXMLLoader
+    private Spinner<Double> thresholdSpinner; // Value injected by FXMLLoader
 
     @FXML // fx:id="compileButton"
     private Button compileButton; // Value injected by FXMLLoader
@@ -131,7 +146,7 @@ public class DetectController {
 
     private boolean needCompilation = true;
 
-    private final StringProperty batchCfStringProperty = new SimpleStringProperty();
+    private final StringProperty batchCfgStringProperty = new SimpleStringProperty();
     private final StringProperty subdivisionsCfgStringProperty = new SimpleStringProperty();
     private final StringProperty widthCfgStringProperty = new SimpleStringProperty();
     private final StringProperty heightStringProperty = new SimpleStringProperty();
@@ -510,6 +525,7 @@ public class DetectController {
             }
         } else {
             changeFlagInMakefile("GPU", 0);
+            needCompilation = true;
             compileButton.requestFocus();
         }
     }
@@ -530,6 +546,7 @@ public class DetectController {
             }
         } else {
             changeFlagInMakefile("OPENCV", 0);
+            needCompilation = true;
             compileButton.requestFocus();
         }
     }
@@ -550,6 +567,7 @@ public class DetectController {
             }
         } else {
             changeFlagInMakefile("CUDNN", 0);
+            needCompilation = true;
             compileButton.requestFocus();
         }
     }
@@ -558,8 +576,8 @@ public class DetectController {
     void checkAndCompile(ActionEvent event) {
         if (needCompilation) {
             String s;
-            String lastLine = "";
             Process p;
+            String lastLine = "";
             try {
                 File dir = new File(directoryToDarknet.getAbsolutePath());
                 p = Runtime.getRuntime().exec("make", null, dir);
@@ -624,7 +642,7 @@ public class DetectController {
     }
 
     private boolean cfgParamsChanged() {
-        if (batchCfStringProperty.getValue() != null && !batchCfStringProperty.getValue().equalsIgnoreCase("")) {
+        if (batchCfgStringProperty.getValue() != null && !batchCfgStringProperty.getValue().equalsIgnoreCase("")) {
             System.out.println("bacth changed");
             return true;
         }
@@ -641,7 +659,54 @@ public class DetectController {
     }
 
     private void writeCfgFile() {
-        System.out.println("Params changed");
+        //System.out.println("Params changed");
+        try {
+            // input the (modified) file content to the StringBuffer "input"
+            BufferedReader file = new BufferedReader(
+                    new FileReader(cfgStringProperty.getValue()));
+            StringBuffer inputBuffer = new StringBuffer();
+            String line;
+
+            while ((line = file.readLine()) != null) {
+                String searchMe = line;
+                String findBatch = "batch=";
+                String findSubdivisions = "subdivisions=";
+                String findWidth = "width=";
+                String findHeight = "height=";
+                if (searchMe.regionMatches(0, findBatch, 0, findBatch.length()) && 
+                        (batchCfgStringProperty != null && !batchCfgStringProperty.getValue().equalsIgnoreCase(""))) {
+                    line = findBatch + batchCfgStringProperty.getValue();
+                    System.out.println("Found batch: " + searchMe + " , new batch: " + line);
+                }
+                else if (searchMe.regionMatches(0, findSubdivisions, 0, findSubdivisions.length()) && 
+                        (subdivisionsCfgStringProperty != null && !subdivisionsCfgStringProperty.getValue().equalsIgnoreCase(""))) {
+                    line = findSubdivisions + subdivisionsCfgStringProperty.getValue();
+                    System.out.println("Found subdivisions: " + searchMe + " , new subdivisions: " + line);
+                }
+                else if (searchMe.regionMatches(0, findWidth, 0, findWidth.length()) && 
+                        (widthCfgStringProperty != null && !widthCfgStringProperty.getValue().equalsIgnoreCase(""))) {
+                    line = findWidth + widthCfgStringProperty.getValue();
+                    System.out.println("Found width: " + searchMe + " , new width: " + line);
+                }
+                else if (searchMe.regionMatches(0, findHeight, 0, findHeight.length()) && 
+                        (heightStringProperty != null && !heightStringProperty.getValue().equalsIgnoreCase(""))) {
+                    line = findHeight + heightStringProperty.getValue();
+                    System.out.println("Found height: " + searchMe + " , new height: " + line);
+                }
+                inputBuffer.append(line);
+                inputBuffer.append('\n');
+            }
+            file.close();
+
+            // write the new string with the replaced line OVER the same file
+            FileOutputStream fileOut = new FileOutputStream(cfgStringProperty.getValue());
+            fileOut.write(inputBuffer.toString().getBytes());
+            fileOut.close();
+
+        } catch (Exception e) {
+            System.out.println("Problem reading cfg file.");
+            e.printStackTrace();
+        }
     }
 
     @FXML
@@ -652,25 +717,28 @@ public class DetectController {
             if (cfgParamsChanged()) {
                 writeCfgFile();
             }
-            String s;
-            Process p;
             try {
-                File dir = new File(directoryToDarknet.getAbsolutePath());
-                String detectCommand = "./darknet detect " + cfgFile.getAbsolutePath() + " "
-                        + weigthsFile.getAbsolutePath() + " " + detectImgFile.getAbsolutePath() + " -thresh "
-                        + thresholdSpinner.getValue();
-                System.out.println(detectCommand);
-                /* 
-                 * p = Runtime.getRuntime().exec(detectCommand, null, dir); BufferedReader br =
-                 * new BufferedReader( new InputStreamReader(p.getInputStream())); while ((s =
-                 * br.readLine()) != null) { System.out.println("line: " + s); } p.waitFor();
-                 * System.out.println ("exit: " + p.exitValue());
-                 * 
-                 * p.destroy();
-                 */
+                System.out.println(thresholdSpinner.getValue());
+                System.out.println(Double.toString(thresholdSpinner.getValue()));
+                String threshold = Double.toString(thresholdSpinner.getValue());
+                ProcessBuilder pb = new ProcessBuilder("./darknet", "detect", cfgFile.getAbsolutePath(), 
+                        weigthsFile.getAbsolutePath(), detectImgFile.getAbsolutePath(), threshold);
+                System.out.println("Command: " + pb.command());
+                pb.directory(new File(directoryToDarknet.getAbsolutePath()));
+                pb.inheritIO();
+                
+                Process process = pb.start();
+                
+                BufferedReader reader = 
+                    new BufferedReader(new InputStreamReader(process.getInputStream()));
+                String line = null;
+                while ( (line = reader.readLine()) != null) {
+                    System.out.println(line);
+                }
+                process.waitFor();
+                System.out.println("Process exit value: " + process.exitValue());
             } catch (Exception e) {
                 System.out.println(e.getStackTrace());
-                // e.printStackTrace();
             }
 
         }
@@ -794,7 +862,7 @@ public class DetectController {
          * });
          */
 
-        batchCfgTextField.textProperty().bindBidirectional(batchCfStringProperty);
+        batchCfgTextField.textProperty().bindBidirectional(batchCfgStringProperty);
         subdivisionsCfgTextField.textProperty().bindBidirectional(subdivisionsCfgStringProperty);
         widthCfgTextField.textProperty().bindBidirectional(widthCfgStringProperty);
         heightCfgTextField.textProperty().bindBidirectional(heightStringProperty);
@@ -804,10 +872,10 @@ public class DetectController {
             @Override
             public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
                 // Auto-generated method stub
-                if (!newValue && (batchCfStringProperty.getValue() != null && 
-                        !batchCfStringProperty.getValue().equalsIgnoreCase(""))) {
+                if (!newValue && (batchCfgStringProperty.getValue() != null && 
+                        !batchCfgStringProperty.getValue().equalsIgnoreCase(""))) {
                     try {
-                        Integer.parseInt(batchCfStringProperty.getValue());
+                        Integer.parseInt(batchCfgStringProperty.getValue());
                     } catch (Exception e) {
                         System.out.println("Exception in batch textFild " + e.getMessage());
                         Alert alert = new Alert(AlertType.ERROR, "Il valore di batch deve essere numerico!");
