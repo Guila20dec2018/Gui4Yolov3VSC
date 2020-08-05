@@ -694,8 +694,12 @@ public class DetectController {
         }
     }
 
+    private void switchToDetectResultScreen() throws IOException {
+        App.setRoot("detectResult");
+    }
+
     @FXML
-    void runDetector(ActionEvent event) {
+    void runDetector(ActionEvent event) throws IOException {
         // before write down in the cfg file the params batch subdivisions width height check if was changes
         
         if (!needCompilation && checkFilesSelection()) {
@@ -722,6 +726,9 @@ public class DetectController {
                 }
                 process.waitFor();
                 System.out.println("Process exit value: " + process.exitValue());
+                if (process.exitValue() == 0) {
+                    switchToDetectResultScreen();
+                }
             } catch (Exception e) {
                 System.out.println(e.getStackTrace());
             }
