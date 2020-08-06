@@ -6,23 +6,28 @@ import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.lang.ProcessBuilder.Redirect;
 import java.net.URL;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
+import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.CheckBox;
+import javafx.scene.control.Dialog;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.ButtonBar.ButtonData;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
@@ -628,7 +633,7 @@ public class DetectController {
 
     private boolean cfgParamsChanged() {
         if (batchCfgStringProperty.getValue() != null && !batchCfgStringProperty.getValue().equalsIgnoreCase("")) {
-            System.out.println("bacth changed");
+            //System.out.println("bacth changed");
             return true;
         }
         if (subdivisionsCfgStringProperty.getValue() != null && !subdivisionsCfgStringProperty.getValue().equalsIgnoreCase("")) {
@@ -699,40 +704,53 @@ public class DetectController {
     }
 
     @FXML
-    void runDetector(ActionEvent event) throws IOException {
-        // before write down in the cfg file the params batch subdivisions width height check if was changes
-        
+    void runDetector(ActionEvent event) {
         if (!needCompilation && checkFilesSelection()) {
             if (cfgParamsChanged()) {
                 writeCfgFile();
             }
             try {
-                System.out.println(thresholdSpinner.getValue());
                 System.out.println(Double.toString(thresholdSpinner.getValue()));
                 String threshold = Double.toString(thresholdSpinner.getValue());
+
                 ProcessBuilder pb = new ProcessBuilder("./darknet", "detect", cfgFile.getAbsolutePath(), 
                         weigthsFile.getAbsolutePath(), detectImgFile.getAbsolutePath(), threshold);
                 System.out.println("Command: " + pb.command());
                 pb.directory(new File(directoryToDarknet.getAbsolutePath()));
-                pb.inheritIO();
-                
+                //pb.inheritIO();
+                //behaves in exactly the same way as the invocation
+                pb.redirectInput(Redirect.INHERIT)
+                .redirectOutput(new File(directoryToDarknet.getAbsolutePath() + "/redOut"))
+                .redirectError(new File(directoryToDarknet.getAbsolutePath() + "/redErr"));
+
                 Process process = pb.start();
-                
-                BufferedReader reader = 
-                    new BufferedReader(new InputStreamReader(process.getInputStream()));
-                String line = null;
-                while ( (line = reader.readLine()) != null) {
-                    System.out.println(line);
-                }
                 process.waitFor();
                 System.out.println("Process exit value: " + process.exitValue());
+
                 if (process.exitValue() == 0) {
-                    switchToDetectResultScreen();
+                    Alert alert = new Alert(AlertType.CONFIRMATION, "Individuamento eseguito corretamente.\nDesidera vedere i risultati?");
+                    Optional<ButtonType> result = alert.showAndWait();
+                    if (result.isPresent() && result.get() == ButtonType.OK) {
+                        try {
+                            switchToDetectResultScreen();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+                else {
+                    needCompilation = true;
+                    //read error msg from file and show in alert
+                    Alert alert = new Alert(AlertType.ERROR, "Errore eseguendo darknet: ...");
+                    Optional<ButtonType> result = alert.showAndWait();
+                    if (result.isPresent() && result.get() == ButtonType.OK) {
+                        //formatSystem();
+                    }
+
                 }
             } catch (Exception e) {
                 System.out.println(e.getStackTrace());
             }
-
         }
         else if (needCompilation) {
             Alert alert = new Alert(AlertType.WARNING, "Compilazione necessaria!");
