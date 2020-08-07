@@ -8,6 +8,7 @@ import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -48,8 +49,8 @@ public class DetectResultController {
     private Button closeButton; // Value injected by FXMLLoader
 
     @FXML
-    void handleCloseButtonClick(ActionEvent event) {
-
+    void handleCloseButtonClick(ActionEvent event) throws IOException {
+        App.setRoot("secondary");
     }
 
     @FXML
@@ -73,7 +74,6 @@ public class DetectResultController {
                 System.out.println(line);
                 // line = ... // replace the line here
                 String [] result = line.split("\\ ");
-                
                 for (int i = 0; i < result.length; i++) {
                     System.out.println(result[i]);
                 }
