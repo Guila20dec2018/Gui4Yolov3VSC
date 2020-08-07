@@ -63,29 +63,27 @@ public class DetectResultController {
     }
 
     private void loadPredctionsResult() {
-        /*try {
+        try {
 			// input the (modified) file content to the StringBuffer "input"
             BufferedReader file = new BufferedReader(
                     new FileReader(darknetPath + "/redOut"));
             String line;
 
             while ((line = file.readLine()) != null) {
-                // System.out.println(line);
+                System.out.println(line);
                 // line = ... // replace the line here
-                if (line.equalsIgnoreCase(flag + "=" + Math.abs(value - 1))) {
-                    System.out.println("Found line");
-                    line = flag + "=" + value;
-                    System.out.println("Line after: " + line);
-                } else if (line.equalsIgnoreCase(flag + "=" + value)) {
-                    System.out.println("Found line, flag already setted: " + line);
+                String [] result = line.split("\\ ");
+                
+                for (int i = 0; i < result.length; i++) {
+                    System.out.println(result[i]);
                 }
             }
             file.close();
 
         } catch (Exception e) {
-            System.out.println("Problem reading Makefile.");
+            System.out.println("Problem reading redOut file.");
             e.printStackTrace();
-        }*/
+        }
     }
 
     @FXML // This method is called by the FXMLLoader when initialization is complete

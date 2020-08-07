@@ -461,7 +461,6 @@ public class DetectController {
     }
 
     // gpu, opencv, cudnn
-
     private void loadMakefileFlags() {
         try {
             // input the (modified) file content to the StringBuffer "input"
@@ -834,7 +833,6 @@ public class DetectController {
         pathToCfgFileTextField.focusedProperty().addListener(new ChangeListener<Boolean>() {
             @Override
             public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
-                // Auto-generated method stub
                 if (!newValue) {
                     System.out.println("Focusing out from pathToWeightsFileTextfield!");
                     if (cfgStringProperty.get() == null || cfgStringProperty.get().equalsIgnoreCase("")) {
@@ -856,7 +854,6 @@ public class DetectController {
         pathToWeightsFileTextField.focusedProperty().addListener(new ChangeListener<Boolean>() {
             @Override
             public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
-                // Auto-generated method stub
                 if (!newValue) {
                     System.out.println("Focusing out from pathToWeightsFileTextfield!");
                     if (weightsStringProperty.get() == null || weightsStringProperty.get().equalsIgnoreCase("")) {
@@ -878,7 +875,6 @@ public class DetectController {
         pathToDetectImgTextField.focusedProperty().addListener(new ChangeListener<Boolean>() {
             @Override
             public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
-                // Auto-generated method stub
                 if (!newValue) {
                     System.out.println("Focusing out from pathToDetectImgTextField!");
                     if (detectImgStringProperty.get() == null || detectImgStringProperty.get().equalsIgnoreCase("")) {
@@ -897,17 +893,6 @@ public class DetectController {
 
         });
 
-        // System.out.println(thresholdSpinner.getValue());
-        /*
-         * thresholdSpinner.focusedProperty().addListener(new ChangeListener<Boolean>(){
-         * 
-         * @Override public void changed(ObservableValue<? extends Boolean> observable,
-         * Boolean oldValue, Boolean newValue) { // Auto-generated method stub if
-         * (!newValue) { System.out.println(thresholdSpinner.getValue()); } }
-         * 
-         * });
-         */
-
         batchCfgTextField.textProperty().bindBidirectional(batchCfgStringProperty);
         subdivisionsCfgTextField.textProperty().bindBidirectional(subdivisionsCfgStringProperty);
         widthCfgTextField.textProperty().bindBidirectional(widthCfgStringProperty);
@@ -917,7 +902,6 @@ public class DetectController {
         batchCfgTextField.focusedProperty().addListener(new ChangeListener<Boolean>(){
             @Override
             public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
-                // Auto-generated method stub
                 if (!newValue && (batchCfgStringProperty.getValue() != null && 
                         !batchCfgStringProperty.getValue().equalsIgnoreCase(""))) {
                     try {
@@ -938,7 +922,6 @@ public class DetectController {
         subdivisionsCfgTextField.focusedProperty().addListener(new ChangeListener<Boolean>(){
             @Override
             public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
-                // Auto-generated method stub
                 if (!newValue && (subdivisionsCfgStringProperty.getValue() != null && 
                         !subdivisionsCfgStringProperty.getValue().equalsIgnoreCase(""))) {
                     try {
@@ -959,7 +942,6 @@ public class DetectController {
         widthCfgTextField.focusedProperty().addListener(new ChangeListener<Boolean>(){
             @Override
             public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
-                // Auto-generated method stub
                 if (!newValue && (widthCfgStringProperty.getValue() != null && 
                         !widthCfgStringProperty.getValue().equalsIgnoreCase(""))) {
                     try {
@@ -980,7 +962,6 @@ public class DetectController {
         heightCfgTextField.focusedProperty().addListener(new ChangeListener<Boolean>(){
             @Override
             public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
-                // Auto-generated method stub
                 if (!newValue && (heightStringProperty.getValue() != null && 
                         !heightStringProperty.getValue().equalsIgnoreCase(""))) {
                     try {
