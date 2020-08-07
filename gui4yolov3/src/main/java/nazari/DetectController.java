@@ -11,23 +11,19 @@ import java.net.URL;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
-import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
-import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.CheckBox;
-import javafx.scene.control.Dialog;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Alert.AlertType;
-import javafx.scene.control.ButtonBar.ButtonData;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
@@ -464,7 +460,47 @@ public class DetectController {
         eagleImgCheckBox.setSelected(false);
     }
 
-    // gpu, opencv, cudnn, threshold
+    // gpu, opencv, cudnn
+
+    private void loadMakefileFlags() {
+        try {
+            // input the (modified) file content to the StringBuffer "input"
+            BufferedReader file = new BufferedReader(
+                    new FileReader(directoryToDarknet.getAbsolutePath() + "/Makefile"));
+            String line;
+
+            while ((line = file.readLine()) != null) {
+                String searchMe = line;
+                String findGPU = "GPU=";
+                String findOPENCV = "OPENCV=";
+                String findCUDNN = "CUDNN=";
+                if (searchMe.regionMatches(0, findGPU, 0, findGPU.length())) {
+                    System.out.println("Found gpu: " + searchMe);
+                    if (searchMe.equalsIgnoreCase(findGPU + "1")) {
+                        gpuCheckBox.setSelected(true);
+                    }
+                }
+                else if (searchMe.regionMatches(0, findOPENCV, 0, findOPENCV.length())) {
+                    System.out.println("Found opencv: " + searchMe);
+                    if (searchMe.equalsIgnoreCase(findOPENCV + "1")) {
+                        opencvCheckBox.setSelected(true);
+                    }
+                }
+                else if (searchMe.regionMatches(0, findCUDNN, 0, findCUDNN.length())) {
+                    System.out.println("Found cudnn: " + searchMe);
+                    if (searchMe.equalsIgnoreCase(findCUDNN + "1")) {
+                        cudnnCheckBox.setSelected(true);
+                    }
+                }
+            }
+            file.close();
+
+        } catch (Exception e) {
+            System.out.println("Problem reading Makefile file.");
+            e.printStackTrace();
+        }
+    }
+
     private void changeFlagInMakefile(String flag, int value) {
         try {
             // input the (modified) file content to the StringBuffer "input"
@@ -477,7 +513,7 @@ public class DetectController {
                 // System.out.println(line);
                 // line = ... // replace the line here
                 if (line.equalsIgnoreCase(flag + "=" + Math.abs(value - 1))) {
-                    System.out.println("Found line");
+                    System.out.println("Found line: " + line);
                     line = flag + "=" + value;
                     System.out.println("Line after: " + line);
                 } else if (line.equalsIgnoreCase(flag + "=" + value)) {
@@ -962,6 +998,8 @@ public class DetectController {
             }
             
         });
+
+        loadMakefileFlags();
 
     }
 
