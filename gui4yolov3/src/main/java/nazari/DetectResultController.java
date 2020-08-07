@@ -4,8 +4,10 @@
 
 package nazari;
 
+import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -18,6 +20,8 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
 public class DetectResultController {
+
+    private String darknetPath;
 
     @FXML // ResourceBundle that was given to the FXMLLoader
     private ResourceBundle resources;
@@ -58,6 +62,30 @@ public class DetectResultController {
 
     }
 
+    private void loadPredctionsResult() {
+        try {
+			// input the (modified) file content to the StringBuffer "input"
+            BufferedReader file = new BufferedReader(
+                    new FileReader(darknetPath + "/redOut"));
+            String line;
+
+            while ((line = file.readLine()) != null) {
+                System.out.println(line);
+                // line = ... // replace the line here
+                String [] result = line.split("\\ ");
+                
+                for (int i = 0; i < result.length; i++) {
+                    System.out.println(result[i]);
+                }
+            }
+            file.close();
+
+        } catch (Exception e) {
+            System.out.println("Problem reading redOut file.");
+            e.printStackTrace();
+        }
+    }
+
     @FXML // This method is called by the FXMLLoader when initialization is complete
     void initialize() {
         assert openOriginalImgButton != null : "fx:id=\"openOriginalImgButton\" was not injected: check your FXML file 'detectResult.fxml'.";
@@ -67,14 +95,17 @@ public class DetectResultController {
         assert salveResultImgButton != null : "fx:id=\"salveResultImgButton\" was not injected: check your FXML file 'detectResult.fxml'.";
         assert closeButton != null : "fx:id=\"closeButton\" was not injected: check your FXML file 'detectResult.fxml'.";
 
-        //Image image1 = new Image("/home/stage101/Desktop/darknet/predictions.jpg");
+        darknetPath = App.getDarknetPath();
+        
         InputStream is = null;
         try {
-            is = new FileInputStream("/home/stage101/Desktop/darknet/predictions.jpg"); // here I get FileNotFoundException
+            is = new FileInputStream(darknetPath + "/predictions.jpg");
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
-        Image image = new Image(is);
-        detecResultImageView.setImage(image);
+        Image predictionsImage = new Image(is);
+        detecResultImageView.setImage(predictionsImage);
+
+        loadPredctionsResult();
     }
 }
