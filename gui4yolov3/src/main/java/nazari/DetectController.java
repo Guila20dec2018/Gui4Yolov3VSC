@@ -6,6 +6,7 @@ import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.lang.ProcessBuilder.Redirect;
 import java.net.URL;
 import java.util.Optional;
 import java.util.ResourceBundle;
@@ -459,7 +460,46 @@ public class DetectController {
         eagleImgCheckBox.setSelected(false);
     }
 
-    // gpu, opencv, cudnn, threshold
+    // gpu, opencv, cudnn
+    private void loadMakefileFlags() {
+        try {
+            // input the (modified) file content to the StringBuffer "input"
+            BufferedReader file = new BufferedReader(
+                    new FileReader(directoryToDarknet.getAbsolutePath() + "/Makefile"));
+            String line;
+
+            while ((line = file.readLine()) != null) {
+                String searchMe = line;
+                String findGPU = "GPU=";
+                String findOPENCV = "OPENCV=";
+                String findCUDNN = "CUDNN=";
+                if (searchMe.regionMatches(0, findGPU, 0, findGPU.length())) {
+                    System.out.println("Found gpu: " + searchMe);
+                    if (searchMe.equalsIgnoreCase(findGPU + "1")) {
+                        gpuCheckBox.setSelected(true);
+                    }
+                }
+                else if (searchMe.regionMatches(0, findOPENCV, 0, findOPENCV.length())) {
+                    System.out.println("Found opencv: " + searchMe);
+                    if (searchMe.equalsIgnoreCase(findOPENCV + "1")) {
+                        opencvCheckBox.setSelected(true);
+                    }
+                }
+                else if (searchMe.regionMatches(0, findCUDNN, 0, findCUDNN.length())) {
+                    System.out.println("Found cudnn: " + searchMe);
+                    if (searchMe.equalsIgnoreCase(findCUDNN + "1")) {
+                        cudnnCheckBox.setSelected(true);
+                    }
+                }
+            }
+            file.close();
+
+        } catch (Exception e) {
+            System.out.println("Problem reading Makefile file.");
+            e.printStackTrace();
+        }
+    }
+
     private void changeFlagInMakefile(String flag, int value) {
         try {
             // input the (modified) file content to the StringBuffer "input"
@@ -472,7 +512,7 @@ public class DetectController {
                 // System.out.println(line);
                 // line = ... // replace the line here
                 if (line.equalsIgnoreCase(flag + "=" + Math.abs(value - 1))) {
-                    System.out.println("Found line");
+                    System.out.println("Found line: " + line);
                     line = flag + "=" + value;
                     System.out.println("Line after: " + line);
                 } else if (line.equalsIgnoreCase(flag + "=" + value)) {
@@ -628,7 +668,7 @@ public class DetectController {
 
     private boolean cfgParamsChanged() {
         if (batchCfgStringProperty.getValue() != null && !batchCfgStringProperty.getValue().equalsIgnoreCase("")) {
-            System.out.println("bacth changed");
+            //System.out.println("bacth changed");
             return true;
         }
         if (subdivisionsCfgStringProperty.getValue() != null && !subdivisionsCfgStringProperty.getValue().equalsIgnoreCase("")) {
@@ -694,38 +734,58 @@ public class DetectController {
         }
     }
 
+    private void switchToDetectResultScreen() throws IOException {
+        App.setRoot("detectResult");
+    }
+
     @FXML
     void runDetector(ActionEvent event) {
-        // before write down in the cfg file the params batch subdivisions width height check if was changes
-        
         if (!needCompilation && checkFilesSelection()) {
             if (cfgParamsChanged()) {
                 writeCfgFile();
             }
             try {
-                System.out.println(thresholdSpinner.getValue());
                 System.out.println(Double.toString(thresholdSpinner.getValue()));
                 String threshold = Double.toString(thresholdSpinner.getValue());
+
                 ProcessBuilder pb = new ProcessBuilder("./darknet", "detect", cfgFile.getAbsolutePath(), 
                         weigthsFile.getAbsolutePath(), detectImgFile.getAbsolutePath(), threshold);
                 System.out.println("Command: " + pb.command());
                 pb.directory(new File(directoryToDarknet.getAbsolutePath()));
-                pb.inheritIO();
-                
+                //pb.inheritIO();
+                //behaves in exactly the same way as the invocation
+                pb.redirectInput(Redirect.INHERIT)
+                .redirectOutput(new File(directoryToDarknet.getAbsolutePath() + "/redOut"))
+                .redirectError(new File(directoryToDarknet.getAbsolutePath() + "/redErr"));
+
                 Process process = pb.start();
-                
-                BufferedReader reader = 
-                    new BufferedReader(new InputStreamReader(process.getInputStream()));
-                String line = null;
-                while ( (line = reader.readLine()) != null) {
-                    System.out.println(line);
-                }
                 process.waitFor();
                 System.out.println("Process exit value: " + process.exitValue());
+
+                if (process.exitValue() == 0) {
+                    Alert alert = new Alert(AlertType.CONFIRMATION, "Individuamento eseguito corretamente.\nDesidera vedere i risultati?");
+                    Optional<ButtonType> result = alert.showAndWait();
+                    if (result.isPresent() && result.get() == ButtonType.OK) {
+                        try {
+                            switchToDetectResultScreen();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+                else {
+                    needCompilation = true;
+                    //read error msg from file and show in alert
+                    Alert alert = new Alert(AlertType.ERROR, "Errore eseguendo darknet: ...");
+                    Optional<ButtonType> result = alert.showAndWait();
+                    if (result.isPresent() && result.get() == ButtonType.OK) {
+                        //formatSystem();
+                    }
+
+                }
             } catch (Exception e) {
                 System.out.println(e.getStackTrace());
             }
-
         }
         else if (needCompilation) {
             Alert alert = new Alert(AlertType.WARNING, "Compilazione necessaria!");
@@ -773,7 +833,6 @@ public class DetectController {
         pathToCfgFileTextField.focusedProperty().addListener(new ChangeListener<Boolean>() {
             @Override
             public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
-                // Auto-generated method stub
                 if (!newValue) {
                     System.out.println("Focusing out from pathToWeightsFileTextfield!");
                     if (cfgStringProperty.get() == null || cfgStringProperty.get().equalsIgnoreCase("")) {
@@ -795,7 +854,6 @@ public class DetectController {
         pathToWeightsFileTextField.focusedProperty().addListener(new ChangeListener<Boolean>() {
             @Override
             public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
-                // Auto-generated method stub
                 if (!newValue) {
                     System.out.println("Focusing out from pathToWeightsFileTextfield!");
                     if (weightsStringProperty.get() == null || weightsStringProperty.get().equalsIgnoreCase("")) {
@@ -817,7 +875,6 @@ public class DetectController {
         pathToDetectImgTextField.focusedProperty().addListener(new ChangeListener<Boolean>() {
             @Override
             public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
-                // Auto-generated method stub
                 if (!newValue) {
                     System.out.println("Focusing out from pathToDetectImgTextField!");
                     if (detectImgStringProperty.get() == null || detectImgStringProperty.get().equalsIgnoreCase("")) {
@@ -836,17 +893,6 @@ public class DetectController {
 
         });
 
-        // System.out.println(thresholdSpinner.getValue());
-        /*
-         * thresholdSpinner.focusedProperty().addListener(new ChangeListener<Boolean>(){
-         * 
-         * @Override public void changed(ObservableValue<? extends Boolean> observable,
-         * Boolean oldValue, Boolean newValue) { // Auto-generated method stub if
-         * (!newValue) { System.out.println(thresholdSpinner.getValue()); } }
-         * 
-         * });
-         */
-
         batchCfgTextField.textProperty().bindBidirectional(batchCfgStringProperty);
         subdivisionsCfgTextField.textProperty().bindBidirectional(subdivisionsCfgStringProperty);
         widthCfgTextField.textProperty().bindBidirectional(widthCfgStringProperty);
@@ -856,7 +902,6 @@ public class DetectController {
         batchCfgTextField.focusedProperty().addListener(new ChangeListener<Boolean>(){
             @Override
             public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
-                // Auto-generated method stub
                 if (!newValue && (batchCfgStringProperty.getValue() != null && 
                         !batchCfgStringProperty.getValue().equalsIgnoreCase(""))) {
                     try {
@@ -877,7 +922,6 @@ public class DetectController {
         subdivisionsCfgTextField.focusedProperty().addListener(new ChangeListener<Boolean>(){
             @Override
             public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
-                // Auto-generated method stub
                 if (!newValue && (subdivisionsCfgStringProperty.getValue() != null && 
                         !subdivisionsCfgStringProperty.getValue().equalsIgnoreCase(""))) {
                     try {
@@ -898,7 +942,6 @@ public class DetectController {
         widthCfgTextField.focusedProperty().addListener(new ChangeListener<Boolean>(){
             @Override
             public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
-                // Auto-generated method stub
                 if (!newValue && (widthCfgStringProperty.getValue() != null && 
                         !widthCfgStringProperty.getValue().equalsIgnoreCase(""))) {
                     try {
@@ -919,7 +962,6 @@ public class DetectController {
         heightCfgTextField.focusedProperty().addListener(new ChangeListener<Boolean>(){
             @Override
             public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
-                // Auto-generated method stub
                 if (!newValue && (heightStringProperty.getValue() != null && 
                         !heightStringProperty.getValue().equalsIgnoreCase(""))) {
                     try {
@@ -937,6 +979,8 @@ public class DetectController {
             }
             
         });
+
+        loadMakefileFlags();
 
     }
 
